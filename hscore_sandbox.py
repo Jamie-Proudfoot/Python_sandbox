@@ -56,8 +56,8 @@ def getHscore_verbose(f,Z):
     # Average of f over k classes
     g=np.zeros_like(f,dtype=np.float64)
     for z in alphabetZ: 
-        Ef_z=np.mean(f[Z==z, :], axis=0)
-        g[Z==z]=Ef_z
+        class_avg=np.mean(f[Z==z, :], axis=0)
+        g[Z==z]=class_avg
     print(f"g:\n{g}")
     # Inter-class covariance for f
     Covg = np.cov(g.T)
