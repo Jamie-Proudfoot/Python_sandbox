@@ -2,6 +2,8 @@
 
 import numpy as np
 
+#%%
+
 # Original code. Author: YaojieBao. Github: https://github.com/YaojieBao/An-Information-theoretic-Metric-of-Transferability
 
 # Comments added here. Author: JamieProudfoot.
@@ -33,6 +35,8 @@ def getHscore(f,Z):
     # H-score as defined by the equation in the paper (Definition 2, Bao, Yaojie, et al. (2019).)
     score=np.trace(np.dot(np.linalg.pinv(Covf,rcond=1e-15), Covg)) # rcond=1e-15 is the default value in pinv
     return score
+
+#%%
 
 # Modified code (verbose). Author: JamieProudfoot.
 
@@ -71,7 +75,4 @@ def getHscore(f,Z):
     for z in set(Z): g[Z==z]=np.mean(f[Z==z],axis=0)
     return np.trace(np.dot(np.linalg.pinv(np.cov(f.T)),np.cov(g.T)))
 
-# %%
-
-print('Hello world')
 #%%
