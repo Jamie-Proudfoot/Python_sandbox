@@ -40,7 +40,7 @@ def getHscore(f,Z):
 
 # Modified code (verbose). Author: JamieProudfoot.
 
-def getHscore(f,Z): 
+def getHscore_verbose(f,Z): 
     """
     Function to calculate H-score
     f :: 'feature function' (n*d matrix)
@@ -63,7 +63,7 @@ def getHscore(f,Z):
 
 # Modified code (succinct). Author: JamieProudfoot.
 
-def getHscore(f,Z):
+def getHscore_succinct(f,Z):
     """
     Function to calculate H-score
     f :: feature function (n*d matrix)
@@ -76,3 +76,5 @@ def getHscore(f,Z):
     return np.trace(np.dot(np.linalg.pinv(np.cov(f.T)),np.cov(g.T)))
 
 #%%
+
+# Testing equivalence of H-score functions
