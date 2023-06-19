@@ -50,6 +50,8 @@ def getHscore_verbose(f,Z):
     """
     # Overall covariance for f
     Covf = np.cov(f.T)
+    # List of class labels
+    alphabetZ=list(set(Z))
     # Average of f over k classes
     g=np.zeros_like(f,dtype=np.float64)
     for z in alphabetZ: g[Z==z]=np.mean(f[Z==z],axis=0)
@@ -78,3 +80,14 @@ def getHscore_succinct(f,Z):
 #%%
 
 # Testing equivalence of H-score functions
+
+f = np.array([[1,0,1,1],[0,1,1,0],[1,1,1,1],[0,0,0,1]])
+Z = np.array([1,1,0,0])
+
+print(f)
+print(Z)
+
+print(f"Original: {getHscore(f,Z)}")
+print(f"Verbose: {getHscore_verbose(f,Z)}")
+print(f"Succinct: {getHscore_verbose(f,Z)}")
+# %%
