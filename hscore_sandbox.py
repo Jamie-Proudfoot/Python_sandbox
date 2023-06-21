@@ -1,6 +1,7 @@
 #%%
 
 import numpy as np
+import datetime
 
 #%%
 
@@ -13,7 +14,7 @@ def getCov(X):
     X_mean=X-np.mean(X,axis=0,keepdims=True)
     cov = np.divide(np.dot(X_mean.T, X_mean), len(X)-1) 
     return cov
-# Can just replace this with np.cov(X.T)
+# Can replace this with np.cov(X.T)
 
 # H-score function
 def getHscore(f,Z):
@@ -79,6 +80,7 @@ def getHscore_succinct(f,Z):
     """
     g=np.zeros_like(f,dtype=np.float64)
     for z in set(Z): g[Z==z]=np.mean(f[Z==z],axis=0)
+    print(f"g:\n{g}")
     return np.trace(np.dot(np.linalg.pinv(np.cov(f.T)),np.cov(g.T)))
 
 #%%
@@ -92,9 +94,18 @@ print(f"f:\n{f}")
 print(f"Z:\n{Z}")
 print()
 
+t0 = datetime.datetime.now()
 print(f"Original: {getHscore(f,Z)}")
+t1 = datetime.datetime.now()
+print((t1-t0))
 print()
+t0 = datetime.datetime.now()
 print(f"Verbose: {getHscore_verbose(f,Z)}")
+t1 = datetime.datetime.now()
+print((t1-t0))
 print()
-print(f"Succinct: {getHscore_verbose(f,Z)}")
+t0 = datetime.datetime.now()
+print(f"Succinct: {getHscore_succinct(f,Z)}")
+t1 = datetime.datetime.now()
+print((t1-t0))
 # %%
