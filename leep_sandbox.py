@@ -38,7 +38,7 @@ def LEEP(Z: np.ndarray, Y: np.ndarray):
 
 # Modified code (verbose). Author: JamieProudfoot.
 
-def LEEP_concise(Z,Y):
+def LEEP_verbose(Z,Y):
     """
     Z :: pseudo source label (n*k_z matrix)
     Y :: target label (n vector)
@@ -49,15 +49,15 @@ def LEEP_concise(Z,Y):
     # n: number of data points, k_z: number of pseudo source label classes
     n, k_z = Z.shape
     # Normalise Z so that total sum over Z == 1
-    normalised_Z=Z/n
+    normalised_Z = Z / n
     # k_y: number of target label classes
     k_y=int(np.max(Y) + 1)
     # Initialise joint probability matrix P(y,z)
-    joint=np.zeros(k_y,k_z)
+    joint=np.zeros((k_y, k_z))
     # Single loop over target data classes
-    for y in range(k_y): joint[y] = np.sum(normalised_Z[Y==y])
+    for y in range(k_y): joint[y] = np.sum(normalised_Z[Y == y], axis=0)
     # Compute conditional probability matrix P(y|z) = P(y,z) / P(z)
-    conditional = (joint / joint.sum(axis=0, keepdims=True)).T
+    conditional = (joint / joint.sum(axis=0)).T
     # Compute EEP (expected empirical prediction)
     marginal = Z @ conditional
     EEP = np.array([py[y] for py, y in zip(marginal, Y)])
@@ -69,7 +69,7 @@ def LEEP_concise(Z,Y):
 
 # Modified code (succinct). Author: JamieProudfoot.
 
-def LEEP_concise(Z,Y):
+def LEEP_succinct(Z,Y):
     """
     Z :: pseudo source label (n*k_z matrix)
     Y :: target label (n vector)
@@ -80,11 +80,37 @@ def LEEP_concise(Z,Y):
     n,k_z=Z.shape
     normalised_Z=Z/n
     k_y=int(np.max(Y)+1)
-    joint=np.zeros(k_y,k_z)
-    for y in range(k_y): joint[y]=np.sum(normalised_Z[Y==y])
-    conditional=(joint/joint.sum(axis=0,keepdims=True)).T
+    joint=np.zeros((k_y,k_z))
+    for y in range(k_y): joint[y]=np.sum(normalised_Z[Y==y],axis=0)
+    conditional=(joint/joint.sum(axis=0)).T
     marginal=Z@conditional
     EEP=np.array([py[y] for py,y in zip(marginal,Y)])
     return np.mean(np.log(EEP))
+
+#%%
+
+# Testing equivalence of LEEP score functions
+
+Z = np.array([[0.3,0.7],[0.2,0.8],[0.9,0.1],[0.55,0.45]])
+Y = np.array([1,1,0,0])
+
+print(f"Z:\n{Z}")
+print(f"Y:\n{Y}")
+print()
+
+t0 = datetime.datetime.now()
+print(f"Original: {LEEP(Z,Y)}")
+t1 = datetime.datetime.now()
+print((t1-t0))
+print()
+t0 = datetime.datetime.now()
+print(f"Verbose: {LEEP_verbose(Z,Y)}")
+t1 = datetime.datetime.now()
+print((t1-t0))
+print()
+t0 = datetime.datetime.now()
+print(f"Succinct: {LEEP_succinct(Z,Y)}")
+t1 = datetime.datetime.now()
+print((t1-t0))
 
 #%%
