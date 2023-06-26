@@ -73,7 +73,7 @@ def getHscore_verbose(f,Z):
 def getHscore_succinct(f,Z):
     """
     Function to calculate H-score
-    f :: feature function (n*d matrix)
+    f :: 'feature function' (n*d matrix)
     Z :: class labels (k vector)
     returns hscore :: numerical measure of feature label association
     succinct version
