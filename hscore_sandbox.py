@@ -23,7 +23,7 @@ def getHscore(f,Z):
     # Covf=np.cov(f.T) # using numpy
     # List of class labels
     alphabetZ=list(set(Z))
-    # Initialise g (replace with g=np.zeros_like(f,dtype=np.float64)) because default data type is int or dtype=int
+    # Initialise g (replace with g=np.zeros_like(f,dtype=np.float32)) because default data type is int or dtype=int
     # Can replace with g=np.zeros(f.shape())
     g=np.zeros_like(f)
     for z in alphabetZ:
@@ -55,7 +55,7 @@ def getHscore_verbose(f,Z):
     # List of class labels
     alphabetZ=list(set(Z))
     # Average of f over k classes
-    g=np.zeros_like(f,dtype=np.float64)
+    g=np.zeros_like(f,dtype=np.float32)
     for z in alphabetZ: 
         class_avg=np.mean(f[Z==z, :], axis=0)
         g[Z==z]=class_avg
@@ -78,7 +78,7 @@ def getHscore_succinct(f,Z):
     returns hscore :: numerical measure of feature label association
     succinct version
     """
-    g=np.zeros_like(f,dtype=np.float64)
+    g=np.zeros_like(f,dtype=np.float32)
     for z in set(Z): g[Z==z]=np.mean(f[Z==z],axis=0)
     print(f"g:\n{g}")
     return np.trace(np.dot(np.linalg.pinv(np.cov(f.T)),np.cov(g.T)))
