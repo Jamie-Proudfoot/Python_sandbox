@@ -44,7 +44,7 @@ def LEEP_verbose(Z,Y):
     Y :: target label (n vector)
     returns leep :: numerical meausure of source model 
     to target dataset transferability
-    concise version
+    verbose version
     """
     # n: number of data points, k_z: number of pseudo source label classes
     n, k_z = Z.shape
@@ -75,7 +75,7 @@ def LEEP_succinct(Z,Y):
     Y :: target label (n vector)
     returns leep :: numerical meausure of source model 
     to target dataset transferability
-    concise version
+    succinct version
     """
     n,k_z=Z.shape
     normalised_Z=Z/n
