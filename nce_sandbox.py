@@ -83,9 +83,8 @@ def NCE_succinct(Z,Y):
     """
     joint=np.histogram2d(Z,Y,bins=(int(np.max(Z)+1),int(np.max(Y)+1)))[0]/len(Z)
     marginal=joint.sum(axis=1,keepdims=True)
-    conditional=np.divide(joint,marginal)
     mask=marginal.reshape(-1)!=0
-    conditional=conditional[mask]+1e-16
+    conditional=np.divide(joint,marginal)[mask]+1e-16
     H=np.sum(-conditional*np.log(conditional),axis=1,keepdims=True)
     return -np.sum(H*marginal.reshape((-1, 1))[mask])
 
