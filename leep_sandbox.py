@@ -78,10 +78,15 @@ def LEEP_succinct(Z,Y):
     succinct version
     """
     n,k_z=Z.shape
-    normalised_Z=Z/n
+    Zn=Z/n
     k_y=int(np.max(Y)+1)
     joint=np.zeros((k_y,k_z))
-    for y in range(k_y): joint[y]=np.sum(normalised_Z[Y==y],axis=0)
+    sort=np.argsort(Y)
+    Ys=Y[sort]
+    split=np.where(Ys[:-1]!=Ys[1:])[0]
+    joint=np.sum(np.array(np.split(Zn[sort],split+1)),axis=1)
+    # joint=np.zeros((k_y, k_z))
+    # for y in range(k_y): joint[y]=np.sum(Zn[Y==y],axis=0)
     conditional=(joint/joint.sum(axis=0)).T
     marginal=Z@conditional
     EEP=np.array([py[y] for py,y in zip(marginal,Y)])
