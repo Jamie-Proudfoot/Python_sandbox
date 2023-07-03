@@ -29,7 +29,6 @@ def getHscore(f,Z):
     for z in alphabetZ:
         Ef_z=np.mean(f[Z==z, :], axis=0)
         g[Z==z]=Ef_z
-    print(f"g:\n{g}")
     # Assuming f is a n*d matrix (data by features). Rows = data points, Columns = features
     # Inter-class covariance for f
     Covg=getCov(g)
@@ -59,7 +58,6 @@ def getHscore_verbose(f,Z):
     for z in alphabetZ: 
         class_avg=np.mean(f[Z==z, :], axis=0)
         g[Z==z]=class_avg
-    print(f"g:\n{g}")
     # Inter-class covariance for f
     Covg = np.cov(g.T)
     # H-score as defined by the equation in the paper (Definition 2, Bao, Yaojie, et al. (2019).)
@@ -80,7 +78,6 @@ def getHscore_succinct(f,Z):
     """
     g=np.zeros_like(f,dtype=np.float32)
     for z in set(Z): g[Z==z]=np.mean(f[Z==z],axis=0)
-    print(f"g:\n{g}")
     return np.trace(np.dot(np.linalg.pinv(np.cov(f.T)),np.cov(g.T)))
 
 #%%
