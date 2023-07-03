@@ -45,7 +45,7 @@ def getHscore_verbose(f,Z):
     """
     Function to calculate H-score
     f :: 'feature function' (n*d matrix)
-    Z :: class labels (k vector)
+    Z :: class labels (n vector)
     returns hscore :: numerical measure of feature label association
     verbose version
     """
@@ -61,7 +61,7 @@ def getHscore_verbose(f,Z):
     # Inter-class covariance for f
     Covg = np.cov(g.T)
     # H-score as defined by the equation in the paper (Definition 2, Bao, Yaojie, et al. (2019).)
-    hscore = np.trace(np.dot(np.linalg.pinv(Covf), Covg))
+    hscore = np.trace(np.linalg.pinv(Covf)@Covg)
     return hscore
 
  #%%
@@ -72,13 +72,13 @@ def getHscore_succinct(f,Z):
     """
     Function to calculate H-score
     f :: 'feature function' (n*d matrix)
-    Z :: class labels (k vector)
+    Z :: class labels (n vector)
     returns hscore :: numerical measure of feature label association
     succinct version
     """
     g=np.zeros_like(f,dtype=np.float32)
     for z in set(Z): g[Z==z]=np.mean(f[Z==z],axis=0)
-    return np.trace(np.dot(np.linalg.pinv(np.cov(f.T)),np.cov(g.T)))
+    return np.trace(np.linalg.pinv(np.cov(f.T))@np.cov(g.T))
 
 #%%
 
