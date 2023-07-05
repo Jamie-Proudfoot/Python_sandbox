@@ -260,7 +260,7 @@ def LogME(f, Y, regression=False):
     LogME calculation proposed in the arxiv 2021 paper
     "Ranking and Tuning Pre-trained Models: A New Paradigm of Exploiting Model Hubs"
     at https://arxiv.org/abs/2110.10545
-    f :: 'Feature function' (n*d matrix)
+    f :: 'feature function' (n*d matrix)
     Y :: 'Target domain labels' (n*r matrix if regression, n vector if classification)
     """
     # n: number of data points, d: dimension of data points
