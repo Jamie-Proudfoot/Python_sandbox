@@ -17,18 +17,18 @@ def getCov(X):
 # Can replace this with np.cov(X.T)
 
 # H-score function
-def getHscore(f,Z):
+def HScore(f,Y):
     # Overall covariance for f
     Covf=getCov(f)
     # Covf=np.cov(f.T) # using numpy
     # List of class labels
-    alphabetZ=list(set(Z))
+    alphabetY=list(set(Y))
     # Initialise g (replace with g=np.zeros_like(f,dtype=np.float32)) because default data type is int or dtype=int
     # Can replace with g=np.zeros(f.shape())
     g=np.zeros_like(f)
-    for z in alphabetZ:
-        Ef_z=np.mean(f[Z==z, :], axis=0)
-        g[Z==z]=Ef_z
+    for y in alphabetY:
+        Ef_y=np.mean(f[Y==y, :], axis=0)
+        g[Y==y]=Ef_y
     # Assuming f is a n*d matrix (data by features). Rows = data points, Columns = features
     # Inter-class covariance for f
     Covg=getCov(g)
@@ -41,23 +41,23 @@ def getHscore(f,Z):
 
 # Modified code (verbose). Author: JamieProudfoot.
 
-def getHscore_verbose(f,Z): 
+def HScore_verbose(f,Y): 
     """
     Function to calculate H-score
     f :: 'feature function' (n*d matrix)
-    Z :: class labels (n vector)
+    Y :: target label (n vector)
     returns hscore :: numerical measure of feature label association
     verbose version
     """
     # Overall covariance for f
     Covf = np.cov(f.T)
     # List of class labels
-    alphabetZ=list(set(Z))
+    alphabetY=list(set(Y))
     # Average of f over k classes
     g=np.zeros_like(f,dtype=np.float32)
-    for z in alphabetZ: 
-        class_avg=np.mean(f[Z==z, :], axis=0)
-        g[Z==z]=class_avg
+    for y in alphabetY: 
+        class_avg=np.mean(f[Y==y, :], axis=0)
+        g[Y==y]=class_avg
     # Inter-class covariance for f
     Covg = np.cov(g.T)
     # H-score as defined by the equation in the paper (Definition 2, Bao, Yaojie, et al. (2019).)
@@ -68,16 +68,16 @@ def getHscore_verbose(f,Z):
 
 # Modified code (succinct). Author: JamieProudfoot.
 
-def getHscore_succinct(f,Z):
+def HScore_succinct(f,Y):
     """
     Function to calculate H-score
     f :: 'feature function' (n*d matrix)
-    Z :: class labels (n vector)
+    Y :: target label (n vector)
     returns hscore :: numerical measure of feature label association
     succinct version
     """
     g=np.zeros_like(f,dtype=np.float32)
-    for z in set(Z): g[Z==z]=np.mean(f[Z==z],axis=0)
+    for y in set(Y): g[Y==y]=np.mean(f[Y==y],axis=0)
     return np.trace(np.linalg.pinv(np.cov(f.T))@np.cov(g.T))
 
 #%%
@@ -85,24 +85,24 @@ def getHscore_succinct(f,Z):
 # Testing equivalence of H-score functions
 
 f = np.array([[1,0,1,1],[0,1,1,0],[1,1,1,1],[0,0,0,1]])
-Z = np.array([1,1,0,0])
+Y = np.array([1,1,0,0])
 
 print(f"f:\n{f}")
-print(f"Z:\n{Z}")
+print(f"Y:\n{Y}")
 print()
 
 t0 = datetime.datetime.now()
-print(f"Original: {getHscore(f,Z)}")
+print(f"Original: {HScore(f,Y)}")
 t1 = datetime.datetime.now()
 print((t1-t0))
 print()
 t0 = datetime.datetime.now()
-print(f"Verbose: {getHscore_verbose(f,Z)}")
+print(f"Verbose: {HScore_verbose(f,Y)}")
 t1 = datetime.datetime.now()
 print((t1-t0))
 print()
 t0 = datetime.datetime.now()
-print(f"Succinct: {getHscore_succinct(f,Z)}")
+print(f"Succinct: {HScore_succinct(f,Y)}")
 t1 = datetime.datetime.now()
 print((t1-t0))
 # %%
