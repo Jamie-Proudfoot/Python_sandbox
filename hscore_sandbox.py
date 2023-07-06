@@ -22,7 +22,7 @@ def HScore(f,Y):
     Covf=getCov(f)
     # Covf=np.cov(f.T) # using numpy
     # List of class labels
-    alphabetZ=list(set(Z))
+    alphabetY=list(set(Y))
     # Initialise g (replace with g=np.zeros_like(f,dtype=np.float32)) because default data type is int or dtype=int
     # Can replace with g=np.zeros(f.shape())
     g=np.zeros_like(f)
