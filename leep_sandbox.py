@@ -77,9 +77,8 @@ def LEEP_succinct(A,Y):
     to target dataset transferability
     succinct version
     """
-    n,k_z=A.shape
+    n=A.shape[0]
     An=A/n
-    k_y=int(np.max(Y)+1)
     sort=np.argsort(Y)
     Ys=Y[sort]
     split=np.where(Ys[:-1]!=Ys[1:])[0]
