@@ -286,6 +286,8 @@ def LogME(f, Y, regression=False):
         # Take the average of max evidences
         evidences.append(evidence)
     return np.mean(evidences)
+
 print(f"Classification: {LogME(np.random.randn(50,20),np.random.randint(2,size=50))}")
 print(f"Regression: {LogME(np.random.randn(50,20),np.random.randn(50,1),regression=True)}")
+print()
 #%%
