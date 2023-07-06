@@ -261,7 +261,7 @@ def LogME(f, Y, regression=False):
     "Ranking and Tuning Pre-trained Models: A New Paradigm of Exploiting Model Hubs"
     at https://arxiv.org/abs/2110.10545
     f :: 'feature function' (n*d matrix)
-    Y :: 'Target domain labels' (n*r matrix if regression, n vector if classification)
+    Y :: Target label (n*r matrix if regression, n vector if classification)
     """
     # n: number of data points, d: dimension of data points
     n, d = f.shape  
