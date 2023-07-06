@@ -255,39 +255,30 @@ print()
 
 # Main LogME calculation
 
-def LogME(f, Y, regression=False):
+def LogME_succinct(f, Y, regression=False):
     """
     LogME calculation proposed in the arxiv 2021 paper
     "Ranking and Tuning Pre-trained Models: A New Paradigm of Exploiting Model Hubs"
     at https://arxiv.org/abs/2110.10545
     f :: 'feature function' (n*d matrix)
     Y :: Target label (n*r matrix if regression, n vector if classification)
+    succinct version
     """
-    # n: number of data points, d: dimension of data points
-    n, d = f.shape  
-    # Singular value decomposition of feature matrix f
-    u, s, vh = trunc_svd(f) if n > d else np.linalg.svd(f, full_matrices=False)
-    s = s.reshape(-1, 1)
-    sigma = s**2
-    evidences = []
-    # If multivariate regression, number of regression targets
-    # If multiclass classification, number of different classes
-    num_dim = Y.shape[1] if regression else int(np.max(Y)+1)
-    # Compute evidence for each regression target or class
+    n,d=f.shape  
+    u,s,vh=trunc_svd(f) if n > d else np.linalg.svd(f,full_matrices=False)
+    s=s.reshape(-1,1)
+    sigma=s**2
+    evidences=[]
+    num_dim=Y.shape[1] if regression else int(np.max(Y)+1)
     for i in range(num_dim):
-        # Construct histograms of label distributions
-        # Smooth for regression, binary for classification
-        Y_ = Y[:, i] if regression else (Y == i).astype(np.float64)
-        Y_ = Y_.reshape(-1, 1)
-        # z is the transformed y under orthogonal basis u
-        z = u.T@Y_
-        # Compute maximum evidence by optimisation
-        evidence = max_evidence(z, Y_, sigma, n, d)
-        # Take the average of max evidences
+        Y_=Y[:,i] if regression else (Y==i).astype(np.float64)
+        Y_=Y_.reshape(-1,1)
+        z=u.T@Y_
+        evidence=max_evidence(z,Y_,sigma,n,d)
         evidences.append(evidence)
     return np.mean(evidences)
 
-print(f"Classification: {LogME(np.random.randn(50,20),np.random.randint(2,size=50))}")
-print(f"Regression: {LogME(np.random.randn(50,20),np.random.randn(50,1),regression=True)}")
+print(f"Classification: {LogME_succinct(np.random.randn(50,20),np.random.randint(2,size=50))}")
+print(f"Regression: {LogME_succinct(np.random.randn(50,20),np.random.randn(50,1),regression=True)}")
 print()
 #%%
