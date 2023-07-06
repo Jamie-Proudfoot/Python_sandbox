@@ -3,7 +3,6 @@
 import numpy as np
 import datetime
 
-
 #%%
 
 # Original code. Author: youkaichao. Github: https://github.com/thuml/LogME/blob/main/NCE.py
