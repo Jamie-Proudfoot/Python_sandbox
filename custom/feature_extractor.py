@@ -47,8 +47,7 @@ print(f.shape)
 
 #%%
 
-from hscore_sandbox import HScore, HScore_verbose, HScore_succinct
-
+from hscore_sandbox import getCov, HScore, HScore_verbose, HScore_succinct
 print(HScore(f,Y))
 print(HScore_verbose(f,Y))
 print(HScore_succinct(f,Y))

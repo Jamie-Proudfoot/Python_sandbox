@@ -11,6 +11,8 @@ import datetime
 
 # Helper function for covariance
 def getCov(X):
+    # Specify dtype to avoid instability in pinv calculation
+    X=np.array(X,dtype=np.float64)
     X_mean=X-np.mean(X,axis=0,keepdims=True)
     cov = np.divide(np.dot(X_mean.T, X_mean), len(X)-1) 
     return cov
@@ -25,7 +27,7 @@ def HScore(f,Y):
     alphabetY=list(set(Y))
     # Initialise g (replace with g=np.zeros_like(f,dtype=np.float32)) because default data type is int or dtype=int
     # Can replace with g=np.zeros(f.shape())
-    g=np.zeros_like(f,dtype=np.float32)
+    g=np.zeros_like(f)
     for y in alphabetY:
         Ef_y=np.mean(f[Y==y, :], axis=0)
         g[Y==y]=Ef_y
@@ -54,7 +56,7 @@ def HScore_verbose(f,Y):
     # List of class labels
     alphabetY=list(set(Y))
     # Average of f over k classes
-    g=np.zeros_like(f,dtype=np.float32)
+    g=np.zeros_like(f,dtype=np.float64)
     for y in alphabetY: 
         class_avg=np.mean(f[Y==y, :], axis=0)
         g[Y==y]=class_avg
@@ -76,7 +78,7 @@ def HScore_succinct(f,Y):
     returns hscore :: numerical measure of feature label association
     succinct version
     """
-    g=np.zeros_like(f,dtype=np.float32)
+    g=np.zeros_like(f,dtype=np.float64)
     for y in set(Y): g[Y==y]=np.mean(f[Y==y],axis=0)
     return np.trace(np.linalg.pinv(np.cov(f.T))@np.cov(g.T))
 
@@ -84,7 +86,7 @@ def HScore_succinct(f,Y):
 
 # Testing equivalence of H-score functions
 
-# f = np.array([[1,0,1,1],[0,1,1,0],[1,1,1,1],[0,0,0,1]])
+# f = np.array([[1,0,1,1],[0,1,1,0],[1,1,1,1],[0,0,0,1]],dtype=np.float64)
 # Y = np.array([1,1,0,0])
 
 # print(f"f:\n{f}")
