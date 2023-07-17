@@ -26,7 +26,6 @@ def HScore(f,Y):
     # Initialise g (replace with g=np.zeros_like(f,dtype=np.float32)) because default data type is int or dtype=int
     # Can replace with g=np.zeros(f.shape())
     g=np.zeros_like(f,dtype=np.float32)
-    print(g)
     for y in alphabetY:
         Ef_y=np.mean(f[Y==y, :], axis=0)
         g[Y==y]=Ef_y
@@ -35,7 +34,7 @@ def HScore(f,Y):
     Covg=getCov(g)
     # Covg=np.cov(g.T) # using numpy
     # H-score as defined by the equation in the paper (Definition 2, Bao, Yaojie, et al. (2019).)
-    score=np.trace(np.dot(np.linalg.pinv(Covf,rcond=1e-15), Covg)) # rcond=1e-15 is the default value in pinv
+    # score=np.trace(np.dot(np.linalg.pinv(Covf,rcond=1e-15), Covg)) # rcond=1e-15 is the default value in pinv
     return score
 
 #%%
