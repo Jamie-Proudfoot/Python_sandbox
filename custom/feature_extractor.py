@@ -47,7 +47,7 @@ print(f.shape)
 
 #%%
 
-from hscore_sandbox import HScore_succinct
+from hscore_sandbox import HScore
 
-print(HScore_succinct(f,Y))
+print(HScore(f,Y))
 #%%

@@ -25,7 +25,7 @@ def HScore(f,Y):
     alphabetY=list(set(Y))
     # Initialise g (replace with g=np.zeros_like(f,dtype=np.float32)) because default data type is int or dtype=int
     # Can replace with g=np.zeros(f.shape())
-    g=np.zeros_like(f)
+    g=np.zeros_like(f,dtype=np.float32)
     for y in alphabetY:
         Ef_y=np.mean(f[Y==y, :], axis=0)
         g[Y==y]=Ef_y
