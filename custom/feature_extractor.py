@@ -29,7 +29,7 @@ feature_extractor = keras.Model(
 #%% 
 
 print("The feature extractor method is called on test data")
-n = 3
+n = 600
 d = 250
 # One 250x250 RGB image as input data
 X = np.random.randn(n, d, d, 3)
@@ -37,7 +37,7 @@ X = np.random.randn(n, d, d, 3)
 X = tf.convert_to_tensor(X)
 print(np.array(X).shape)
 # One classification label as output data
-Y = np.random.randint(5, size=(1,n))
+Y = np.random.randint(3, size=(1,n))
 Y = Y.flatten()
 print(Y)
 # Extracted features for this image
@@ -47,8 +47,10 @@ print(f.shape)
 
 #%%
 
-from hscore_sandbox import getCov, HScore, HScore_verbose, HScore_succinct
+from hscore_sandbox import HScore, HScore_verbose, HScore_succinct, HScore_regularised
 print(HScore(f,Y))
 print(HScore_verbose(f,Y))
 print(HScore_succinct(f,Y))
+print(HScore_regularised(f,Y))
+
 #%%
