@@ -34,7 +34,7 @@ def HScore(f,Y):
     Covg=getCov(g)
     # Covg=np.cov(g.T) # using numpy
     # H-score as defined by the equation in the paper (Definition 2, Bao, Yaojie, et al. (2019).)
-    # score=np.trace(np.dot(np.linalg.pinv(Covf,rcond=1e-15), Covg)) # rcond=1e-15 is the default value in pinv
+    score=np.trace(np.dot(np.linalg.pinv(Covf,rcond=1e-15), Covg)) # rcond=1e-15 is the default value in pinv
     return score
 
 #%%
