@@ -48,9 +48,9 @@ print(f.shape)
 #%%
 
 from hscore_sandbox import HScore, HScore_verbose, HScore_succinct, HScore_regularised
-print(HScore(f,Y))
-print(HScore_verbose(f,Y))
-print(HScore_succinct(f,Y))
-print(HScore_regularised(f,Y))
+print(f'Original: {HScore(f,Y)}')
+print(f'Verbose: {HScore_verbose(f,Y)}')
+print(f'Succinct: {HScore_succinct(f,Y)}')
+print(f'Regularised: {HScore_regularised(f,Y)}')
 
 #%%
