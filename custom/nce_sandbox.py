@@ -3,6 +3,9 @@
 import numpy as np
 import datetime
 
+# In case some pseudo-classes are unoccupied and p_z = 0
+np.seterr(divide='ignore', invalid='ignore')
+
 #%%
 
 # Original code. Author: youkaichao. Github: https://github.com/thuml/LogME/blob/main/NCE.py

@@ -280,7 +280,7 @@ def LogME_succinct(f, Y, regression=False):
 
 #%%
 # Testing the equivalence of LogME calculations
-print(f"Classification: {LogME_succinct(np.random.randn(50,20),np.random.randint(2,size=50))}")
-print(f"Regression: {LogME_succinct(np.random.randn(50,20),np.random.randn(50,1),regression=True)}")
-print()
+# print(f"Classification: {LogME_succinct(np.random.randn(50,20),np.random.randint(2,size=50))}")
+# print(f"Regression: {LogME_succinct(np.random.randn(50,20),np.random.randn(50,1),regression=True)}")
+# print()
 #%%

@@ -77,12 +77,11 @@ def LEEP_succinct(A,Y):
     to target dataset transferability
     succinct version
     """
-    n=A.shape[0]
+    n,k_z=A.shape
     An=A/n
-    sort=np.argsort(Y)
-    Ys=Y[sort]
-    split=np.where(Ys[:-1]!=Ys[1:])[0]
-    joint=np.sum(np.array(np.split(An[sort],split+1)),axis=1)
+    k_y=int(np.max(Y) + 1)
+    joint=np.zeros((k_y, k_z))
+    for y in range(k_y): joint[y] = np.sum(An[Y == y], axis=0)
     conditional=(joint/joint.sum(axis=0)).T
     marginal=A@conditional
     EEP=np.array([py[y] for py,y in zip(marginal,Y)])
