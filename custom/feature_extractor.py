@@ -46,7 +46,8 @@ Y = Y.flatten()
 print(Y)
 # Dummy classification labels
 A = initial_model.predict(X)
-Z = A.argmax(axis=1)
+print(A)
+Z = A.argmax(axis=-1)
 print(Z)
 # Extracted features for this image
 features = feature_extractor(X)
@@ -74,10 +75,16 @@ print(f'Succinct: {NCE_succinct(Z,Y)}')
 # LEEP
 
 from leep_sandbox import LEEP, LEEP_verbose, LEEP_succinct
+print(f'Original: {LEEP(A,Y)}')
+print(f'Verbose: {LEEP_verbose(A,Y)}')
+print(f'Succinct: {LEEP_succinct(A,Y)}')
 
 #%%
 # LogME
 
 from logme_sandbox import LogME, LogME_succinct
+logme = LogME(regression=False)
+print(f'Original: {logme.fit(f,Y)}')
+print(f'Succinct: {LogME_succinct(f,Y)}')
 
 #%%
