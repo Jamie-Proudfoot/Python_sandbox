@@ -5,6 +5,7 @@ import tensorflow as tf
 from tensorflow import keras
 
 #%%
+# Number of classes
 c = 3
 
 print("Feature extraction from one layer only")
