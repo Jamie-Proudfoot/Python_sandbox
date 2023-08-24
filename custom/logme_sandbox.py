@@ -13,7 +13,7 @@ print()
 # Additional comments added here
 
 @njit # possible error with numpy version
-def each_evidence(y_, f, fh, v, s, vh, N, D):
+def each_evidence(y_, F, fh, v, s, vh, N, Df):
     """
     compute the maximum evidence for each class
     """
@@ -21,7 +21,7 @@ def each_evidence(y_, f, fh, v, s, vh, N, D):
     alpha = 1.0
     beta = 1.0
     lam = alpha / beta
-    tmp = (vh @ (f @ np.ascontiguousarray(y_)))
+    tmp = (vh @ (F @ np.ascontiguousarray(y_)))
     for _ in range(11):
         # should converge after at most 10 steps
         # typically converge after two or three steps
@@ -37,7 +37,7 @@ def each_evidence(y_, f, fh, v, s, vh, N, D):
         if np.abs(new_lam - lam) / lam < 0.01:
             break
         lam = new_lam
-    evidence = D / 2.0 * np.log(alpha) \
+    evidence = Df / 2.0 * np.log(alpha) \
                + N / 2.0 * np.log(beta) \
                - 0.5 * np.sum(np.log(alpha + beta * s)) \
                - beta / 2.0 * (beta_de + epsilon) \
@@ -45,7 +45,7 @@ def each_evidence(y_, f, fh, v, s, vh, N, D):
                - N / 2.0 * np.log(2 * np.pi)
     return evidence / N, alpha, beta, m
 # use pseudo data to compile the function
-# D = 20, N = 50
+# Df = 20, N = 50
 f_tmp = np.random.randn(20, 50).astype(np.float64)
 each_evidence(np.random.randint(0, 2, 50).astype(np.float64), f_tmp, f_tmp.transpose(), np.eye(20, dtype=np.float64), np.ones(20, dtype=np.float64), np.eye(20, dtype=np.float64), 50, 20)
 
@@ -54,11 +54,11 @@ def truncated_svd(x):
     u, s, vh = np.linalg.svd(x.transpose() @ x)
     s = np.sqrt(s)
     u_times_sigma = x @ vh.transpose()
-    k = np.sum((s > 1e-10) * 1)  # rank of f
+    K = np.sum((s > 1e-10) * 1)  # rank of F
     s = s.reshape(-1, 1)
-    s = s[:k]
-    vh = vh[:k]
-    u = u_times_sigma[:, :k] / s.reshape(1, -1)
+    s = s[:K]
+    vh = vh[:K]
+    u = u_times_sigma[:, :K] / s.reshape(1, -1)
     return u, s, vh
 truncated_svd(np.random.randn(20, 10).astype(np.float64))
 
@@ -75,23 +75,23 @@ class LogME(object):
         self.num_dim = 0
         self.alphas = []  # alpha for each class / dimension
         self.betas = []  # beta for each class / dimension
-        # self.ms.shape --> [C, D]
+        # self.ms.shape --> [C, Df]
         self.ms = []  # m for each class / dimension
 
-    def _fit_fixed_point(self, f: np.ndarray, y: np.ndarray):
+    def _fit_fixed_point(self, F: np.ndarray, y: np.ndarray):
         """
         LogME calculation proposed in the arxiv 2021 paper
         "Ranking and Tuning Pre-trained Models: A New Paradigm of Exploiting Model Hubs"
         at https://arxiv.org/abs/2110.10545
         """
-        N, D = f.shape  # k = min(N, D)
-        if N > D: # direct SVD may be expensive
-            u, s, vh = truncated_svd(f)
+        N, Df = F.shape  # K = min(N, Df)
+        if N > Df: # direct SVD may be expensive
+            u, s, vh = truncated_svd(F)
         else:
-            u, s, vh = np.linalg.svd(f, full_matrices=False)
-        # u.shape = N x k
-        # s.shape = k
-        # vh.shape = k x D
+            u, s, vh = np.linalg.svd(F, full_matrices=False)
+        # u.shape = N x K
+        # s.shape = K
+        # vh.shape = K x Df
         s = s.reshape(-1, 1)
         sigma = (s ** 2)
 
@@ -100,9 +100,9 @@ class LogME(object):
         for i in range(self.num_dim):
             y_ = y[:, i] if self.regression else (y == i).astype(np.float64)
             y_ = y_.reshape(-1, 1)
-            x = u.T @ y_  # x has shape [k, 1], but actually x should have shape [N, 1]
+            x = u.T @ y_  # x has shape [K, 1], but actually x should have shape [N, 1]
             x2 = x ** 2
-            res_x2 = (y_ ** 2).sum() - x2.sum()  # if k < N, we compute sum of xi for 0 singular values directly
+            res_x2 = (y_ ** 2).sum() - x2.sum()  # if K < N, we compute sum of xi for 0 singular values directly
 
             alpha, beta = 1.0, 1.0
             for _ in range(11):
@@ -113,7 +113,7 @@ class LogME(object):
                 alpha = gamma / (m2 + 1e-5)
                 beta = (N - gamma) / (res2 + 1e-5)
                 t_ = alpha / beta
-                evidence = D / 2.0 * np.log(alpha) \
+                evidence = Df / 2.0 * np.log(alpha) \
                            + N / 2.0 * np.log(beta) \
                            - 0.5 * np.sum(np.log(alpha + beta * sigma)) \
                            - beta / 2.0 * res2 \
@@ -122,7 +122,7 @@ class LogME(object):
                 evidence /= N
                 if abs(t_ - t) / t <= 1e-3:  # abs(t_ - t) <= 1e-5 or abs(1 / t_ - 1 / t) <= 1e-5:
                     break
-            evidence = D / 2.0 * np.log(alpha) \
+            evidence = Df / 2.0 * np.log(alpha) \
                        + N / 2.0 * np.log(beta) \
                        - 0.5 * np.sum(np.log(alpha + beta * sigma)) \
                        - beta / 2.0 * res2 \
@@ -140,36 +140,36 @@ class LogME(object):
 
     _fit = _fit_fixed_point
 
-    def fit(self, f: np.ndarray, y: np.ndarray):
+    def fit(self, F: np.ndarray, y: np.ndarray):
         """
-        :param f: [N, F], feature matrix from pre-trained model
+        :param F: [N, Df], feature matrix from pre-trained model
         :param y: target labels.
             For classification, y has shape [N] with element in [0, C_t).
             For regression, y has shape [N, C] with C regression-labels
 
-        :return: LogME score (how well f can fit y directly)
+        :return: LogME score (how well F can fit y directly)
         """
         if self.fitted:
             warnings.warn('re-fitting for new data. old parameters cleared.')
             self.reset()
         else:
             self.fitted = True
-        f = f.astype(np.float64)
+        F = F.astype(np.float64)
         if self.regression:
             y = y.astype(np.float64)
             if len(y.shape) == 1:
                 y = y.reshape(-1, 1)
-        return self._fit(f, y)
+        return self._fit(F, y)
 
-    def predict(self, f: np.ndarray):
+    def predict(self, F: np.ndarray):
         """
-        :param f: [N, F], feature matrix
+        :param F: [N, Df], feature matrix
         :return: prediction, return shape [N, X]
         """
         if not self.fitted:
             raise RuntimeError("not fitted, please call fit first")
-        f = f.astype(np.float64)
-        logits = f @ self.ms.T
+        F = F.astype(np.float64)
+        logits = F @ self.ms.T
         if self.regression:
             return logits
         return np.argmax(logits, axis=-1)
@@ -185,16 +185,16 @@ print()
 
 # Compute evidence
 @njit
-def calc_evidence(n, d, alpha, beta, sigma, res2, m2):
+def calc_evidence(N, Df, alpha, beta, sigma, res2, m2):
     # Compute log evidence according to eqn (2) in You et al. 2021
-    evidence = d/2*np.log(alpha) \
-            + n/2*np.log(beta) \
+    evidence = Df/2*np.log(alpha) \
+            + N/2*np.log(beta) \
             - 0.5*np.sum(np.log(alpha+beta*sigma)) \
             - beta/2*res2 \
             - alpha/2*m2 \
-            -  n/2*np.log(2*np.pi)
-    # Normalise log evidence by n
-    evidence /= n
+            -  N/2*np.log(2*np.pi)
+    # Normalise log evidence by N
+    evidence /= N
     return evidence
 # Precompile with numba for speed
 calc_evidence(50,20,1,1,np.random.randn(50)**2,1,1)
@@ -203,7 +203,7 @@ print()
 
 # Compute maximum evidence by optimisation
 @njit
-def max_evidence(z, Y_, sigma, n, d):
+def max_evidence(z, Y_, sigma, N, Df):
     """
     Compute the maximum evidence for each class
     """
@@ -221,11 +221,11 @@ def max_evidence(z, Y_, sigma, n, d):
         res2 = np.sum(z2/(1+sigma/t)**2)+res_z2
         # Update alpha and beta variance
         alpha = gamma/(m2+1e-5)
-        beta = (n-gamma)/(res2+1e-5)
+        beta = (N-gamma)/(res2+1e-5)
         # Update alpha beta ratio t
         t_ = alpha/beta
         # Compute evidence
-        evidence = calc_evidence(n, d, alpha, beta, sigma, res2, m2)
+        evidence = calc_evidence(N, Df, alpha, beta, sigma, res2, m2)
         # Early stopping condition for convergence
         if abs(t_-t)/t <= 1e-5: break
     return evidence
@@ -240,12 +240,12 @@ def trunc_svd(x):
     u, s, vh = np.linalg.svd(x.T@x)
     s = np.sqrt(s)
     u_times_sigma = x@vh.T
-    # k is the rank of f
-    k = np.sum(s > 1e-10)
+    # K is the rank of F
+    K = np.sum(s > 1e-10)
     s = s.reshape(-1, 1)
-    s = s[:k]
-    vh = vh[:k]
-    u = u_times_sigma[:,:k]/s.reshape(1, -1)
+    s = s[:K]
+    vh = vh[:K]
+    u = u_times_sigma[:,:K]/s.reshape(1, -1)
     # Retain only the kth most important values
     return u, s, vh
 # Precompile with numba for speed
@@ -255,17 +255,17 @@ print()
 
 # Main LogME calculation
 
-def LogME_succinct(f, Y, regression=False):
+def LogME_succinct(F, Y, regression=False):
     """
     LogME calculation proposed in the arxiv 2021 paper
     "Ranking and Tuning Pre-trained Models: A New Paradigm of Exploiting Model Hubs"
     at https://arxiv.org/abs/2110.10545
-    f :: 'feature function' (n*d matrix)
-    Y :: Target label (n*r matrix if regression, n vector if classification)
+    F :: 'feature function' (N*Df matrix)
+    Y :: Target label (N*r matrix if regression, N vector if classification)
     succinct version
     """
-    n,d=f.shape  
-    u,s,vh=trunc_svd(f) if n > d else np.linalg.svd(f,full_matrices=False)
+    N,Df=F.shape  
+    u,s,vh=trunc_svd(F) if N > Df else np.linalg.svd(F,full_matrices=False)
     s=s.reshape(-1,1)
     sigma=s**2
     evidences=[]
@@ -274,13 +274,21 @@ def LogME_succinct(f, Y, regression=False):
         Y_=Y[:,i] if regression else (Y==i).astype(np.float64)
         Y_=Y_.reshape(-1,1)
         z=u.T@Y_
-        evidence=max_evidence(z,Y_,sigma,n,d)
+        evidence=max_evidence(z,Y_,sigma,N,Df)
         evidences.append(evidence)
     return np.mean(evidences)
 
 #%%
 # Testing the equivalence of LogME calculations
-# print(f"Classification: {LogME_succinct(np.random.randn(50,20),np.random.randint(2,size=50))}")
-# print(f"Regression: {LogME_succinct(np.random.randn(50,20),np.random.randn(50,1),regression=True)}")
+# F = np.random.randn(50,20)
+# Yc = np.random.randint(2,size=50)
+# Yr = np.random.randn(50,1)
+
+# logme = LogME(regression=False)
+# print(f"Classification original: {logme.fit(F,Yc)}")
+# print(f"Classification succinct: {LogME_succinct(F,Yc)}")
+# logme = LogME(regression=True)
+# print(f"Regression original: {logme.fit(F,Yr)}")
+# print(f"Regression succinct: {LogME_succinct(F,Yr,regression=True)}")
 # print()
 #%%

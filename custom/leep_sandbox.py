@@ -40,22 +40,22 @@ def LEEP(A: np.ndarray, Y: np.ndarray):
 
 def LEEP_verbose(A,Y):
     """
-    A :: pseudo source label (n*k_z matrix)
-    Y :: target label (n vector)
+    A :: pseudo source label (N*K_z matrix)
+    Y :: target label (N vector)
     returns leep :: numerical meausure of source model 
     to target dataset transferability
     verbose version
     """
-    # n: number of data points, k_z: number of pseudo source label classes
-    n, k_z = A.shape
+    # N: number of data points, K_z: number of pseudo source label classes
+    N, K_z = A.shape
     # Normalise Z so that total sum over Z == 1
-    normalised_A = A / n
-    # k_y: number of target label classes
-    k_y=int(np.max(Y) + 1)
+    normalised_A = A / N
+    # K_y: number of target label classes
+    K_y=int(np.max(Y) + 1)
     # Initialise joint probability matrix P(y,z)
-    joint=np.zeros((k_y, k_z))
+    joint=np.zeros((K_y, K_z))
     # Single loop over target data classes
-    for y in range(k_y): joint[y] = np.sum(normalised_A[Y == y], axis=0)
+    for y in range(K_y): joint[y] = np.sum(normalised_A[Y == y], axis=0)
     # Compute conditional probability matrix P(y|z) = P(y,z) / P(z)
     conditional = (joint / joint.sum(axis=0)).T
     # Compute EEP (expected empirical prediction)
@@ -71,17 +71,17 @@ def LEEP_verbose(A,Y):
 
 def LEEP_succinct(A,Y):
     """
-    A :: pseudo source label (n*k_z matrix)
-    Y :: target label (n vector)
+    A :: pseudo source label (N*K_z matrix)
+    Y :: target label (N vector)
     returns leep :: numerical meausure of source model 
     to target dataset transferability
     succinct version
     """
-    n,k_z=A.shape
-    An=A/n
-    k_y=int(np.max(Y) + 1)
-    joint=np.zeros((k_y, k_z))
-    for y in range(k_y): joint[y] = np.sum(An[Y == y], axis=0)
+    N,K_z=A.shape
+    An=A/N
+    K_y=int(np.max(Y) + 1)
+    joint=np.zeros((K_y, K_z))
+    for y in range(K_y): joint[y] = np.sum(An[Y == y], axis=0)
     conditional=(joint/joint.sum(axis=0)).T
     marginal=A@conditional
     EEP=np.array([py[y] for py,y in zip(marginal,Y)])

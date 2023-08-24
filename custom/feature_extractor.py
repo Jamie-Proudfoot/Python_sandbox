@@ -34,15 +34,15 @@ feature_extractor = keras.Model(
 #%% 
 
 print("The feature extractor method is called on test data")
-n = 600
-d = 250
+N = 600
+D = 250
 # One 250x250 RGB image as input data
-X = np.random.randn(n, d, d, c)
-# X = np.ones((n, d, d, 3))
+X = np.random.randn(N, D, D, c)
+# X = np.ones((N, D, D, 3))
 X = tf.convert_to_tensor(X)
 print(np.array(X).shape)
 # One classification label as output data
-Y = np.random.randint(3, size=(1,n))
+Y = np.random.randint(3, size=(1,N))
 Y = Y.flatten()
 print(Y)
 # Dummy classification labels
@@ -52,17 +52,17 @@ Z = A.argmax(axis=-1)
 print(Z)
 # Extracted features for this image
 features = feature_extractor(X)
-f = np.array(features).reshape(n,-1)
-print(f.shape)
+F = np.array(features).reshape(N,-1)
+print(F.shape)
 
 #%%
 # H-Score
 
 from hscore_sandbox import HScore, HScore_verbose, HScore_succinct, HScore_regularised
-print(f'Original: {HScore(f,Y)}')
-print(f'Verbose: {HScore_verbose(f,Y)}')
-print(f'Succinct: {HScore_succinct(f,Y)}')
-print(f'Regularised: {HScore_regularised(f,Y)}')
+print(f'Original: {HScore(F,Y)}')
+print(f'Verbose: {HScore_verbose(F,Y)}')
+print(f'Succinct: {HScore_succinct(F,Y)}')
+print(f'Regularised: {HScore_regularised(F,Y)}')
 
 #%%
 # NCE
@@ -85,7 +85,7 @@ print(f'Succinct: {LEEP_succinct(A,Y)}')
 
 from logme_sandbox import LogME, LogME_succinct
 logme = LogME(regression=False)
-print(f'Original: {logme.fit(f,Y)}')
-print(f'Succinct: {LogME_succinct(f,Y)}')
+print(f'Original: {logme.fit(F,Y)}')
+print(f'Succinct: {LogME_succinct(F,Y)}')
 
 #%%
