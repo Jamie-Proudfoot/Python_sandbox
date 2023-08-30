@@ -40,22 +40,22 @@ def LEEP(A: np.ndarray, Y: np.ndarray):
 
 def LEEP_verbose(A,Y):
     """
-    A :: pseudo source label (N*K_z matrix)
+    A :: pseudo source label (N*Kz matrix)
     Y :: target label (N vector)
     returns leep :: numerical meausure of source model 
     to target dataset transferability
     verbose version
     """
-    # N: number of data points, K_z: number of pseudo source label classes
-    N, K_z = A.shape
+    # N: number of data points, Kz: number of pseudo source label classes
+    N, Kz = A.shape
     # Normalise Z so that total sum over Z == 1
     normalised_A = A / N
-    # K_y: number of target label classes
-    K_y=int(np.max(Y) + 1)
+    # Ky: number of target label classes
+    Ky=int(np.max(Y) + 1)
     # Initialise joint probability matrix P(y,z)
-    joint=np.zeros((K_y, K_z))
+    joint=np.zeros((Ky, Kz))
     # Single loop over target data classes
-    for y in range(K_y): joint[y] = np.sum(normalised_A[Y == y], axis=0)
+    for y in range(Ky): joint[y] = np.sum(normalised_A[Y == y], axis=0)
     # Compute conditional probability matrix P(y|z) = P(y,z) / P(z)
     conditional = (joint / joint.sum(axis=0)).T
     # Compute EEP (expected empirical prediction)
@@ -71,17 +71,17 @@ def LEEP_verbose(A,Y):
 
 def LEEP_succinct(A,Y):
     """
-    A :: pseudo source label (N*K_z matrix)
+    A :: pseudo source label (N*Kz matrix)
     Y :: target label (N vector)
     returns leep :: numerical meausure of source model 
     to target dataset transferability
     succinct version
     """
-    N,K_z=A.shape
+    N,Kz=A.shape
     An=A/N
-    K_y=int(np.max(Y) + 1)
-    joint=np.zeros((K_y, K_z))
-    for y in range(K_y): joint[y] = np.sum(An[Y == y], axis=0)
+    Ky=int(np.max(Y) + 1)
+    joint=np.zeros((Ky, Kz))
+    for y in range(Ky): joint[y] = np.sum(An[Y == y], axis=0)
     conditional=(joint/joint.sum(axis=0)).T
     marginal=A@conditional
     EEP=np.array([py[y] for py,y in zip(marginal,Y)])

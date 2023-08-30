@@ -49,21 +49,21 @@ def NCE_verbose(Z,Y):
     verbose version
     """
     # Number of target classes
-    K_y = int(np.max(Y) + 1) 
+    Ky = int(np.max(Y) + 1) 
     # Number of source classes
-    K_z = int(np.max(Z) + 1)
+    Kz = int(np.max(Z) + 1)
     N = len(Z)
-    # Joint probability of target and source labels P(z,y) (K_z*K_y matrix)
-    joint = np.histogram2d(Z, Y, bins = (K_z, K_y))[0] / N
-    # Marginal probability of source label P(z) (K_z*1 matrix)
+    # Joint probability of target and source labels P(z,y) (Kz*Ky matrix)
+    joint = np.histogram2d(Z, Y, bins = (Kz, Ky))[0] / N
+    # Marginal probability of source label P(z) (Kz*1 matrix)
     marginal = joint.sum(axis=1, keepdims=True)
-    # Conditional probability matrix P(y|z) = P(z,y) / P(z) (K_z*K_y matrix)
+    # Conditional probability matrix P(y|z) = P(z,y) / P(z) (Kz*Ky matrix)
     conditional = np.divide(joint,marginal)
-    # Mask variable for boolean where P(z) is not zero (K_z boolean vector)
+    # Mask variable for boolean where P(z) is not zero (Kz boolean vector)
     mask = marginal.reshape(-1) != 0
     # Remove zero values to avoid log asymptote
     conditional = conditional[mask] + 1e-16
-    # Entropy of Y given Z == H(y|z) (K_z*1 matrix)
+    # Entropy of Y given Z == H(y|z) (Kz*1 matrix)
     H = np.sum(-conditional * np.log(conditional), axis=1, keepdims=True)
     # Conditional entropy; sum only when P(z) is not zero
     ce = np.sum(H * marginal.reshape((-1, 1))[mask])
