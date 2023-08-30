@@ -6,7 +6,7 @@ from tensorflow import keras
 
 #%%
 # Number of classes
-c = 3
+K = 3
 
 print("Feature extraction from one layer only")
 initial_model = keras.Sequential(
@@ -21,7 +21,7 @@ initial_model = keras.Sequential(
       keras.layers.Conv2D(16, 2, activation="relu"),
       keras.layers.Flatten(),
       keras.layers.Dense(64, activation="relu"),
-      keras.layers.Dense(c, activation="softmax")
+      keras.layers.Dense(K, activation="softmax")
    ]
 )
 
@@ -37,7 +37,7 @@ print("The feature extractor method is called on test data")
 N = 600
 D = 250
 # One 250x250 RGB image as input data
-X = np.random.randn(N, D, D, c)
+X = np.random.randn(N, D, D, K)
 # X = np.ones((N, D, D, 3))
 X = tf.convert_to_tensor(X)
 print(np.array(X).shape)
