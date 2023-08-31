@@ -1,4 +1,6 @@
 #%%
+import os
+os.environ["OMP_NUM_THREADS"] = '1'
 
 import numpy as np
 import tensorflow as tf
@@ -91,8 +93,9 @@ print(f'Succinct: {LogME_succinct(F,Y)}')
 #%%
 # N-LEEP
 
-from nleep_sandbox import NLEEP_succinct
+from nleep_sandbox import NLEEP_verbose, NLEEP_succinct
 logme = LogME(regression=False)
+print(f'Verbose: {NLEEP_verbose(F,Y)}')
 print(f'Succinct: {NLEEP_succinct(F,Y)}')
 
 #%%
