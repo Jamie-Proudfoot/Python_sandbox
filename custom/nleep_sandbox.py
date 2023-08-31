@@ -74,25 +74,25 @@ def NLEEP_succinct(F,Y,p=0.9,Kv=7):
 #%%
 
 # Testing equivalence of LEEP score functions
-N = 100
-Ky = 2
-Df = 5
+# N = 100
+# Ky = 2
+# Df = 5
 
-F = np.array(np.random.randint(2,size=(N,Df)),dtype=np.float64)
-Y = np.random.randint(2,size=N)
+# F = np.array(np.random.randint(2,size=(N,Df)),dtype=np.float64)
+# Y = np.random.randint(2,size=N)
 
-print(f"F[:10]:\n{F[:10]}")
-print(f"Y[:10]:\n{Y[:10]}")
-print()
+# print(f"F[:10]:\n{F[:10]}")
+# print(f"Y[:10]:\n{Y[:10]}")
+# print()
 
-t0 = datetime.datetime.now()
-print(f"Verbose: {NLEEP_verbose(F,Y)}")
-t1 = datetime.datetime.now()
-print((t1-t0))
-print()
-t0 = datetime.datetime.now()
-print(f"Succinct: {NLEEP_succinct(F,Y)}")
-t1 = datetime.datetime.now()
-print((t1-t0))
+# t0 = datetime.datetime.now()
+# print(f"Verbose: {NLEEP_verbose(F,Y)}")
+# t1 = datetime.datetime.now()
+# print((t1-t0))
+# print()
+# t0 = datetime.datetime.now()
+# print(f"Succinct: {NLEEP_succinct(F,Y)}")
+# t1 = datetime.datetime.now()
+# print((t1-t0))
 
 #%%
