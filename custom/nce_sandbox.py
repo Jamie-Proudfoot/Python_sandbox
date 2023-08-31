@@ -3,6 +3,8 @@
 import numpy as np
 import datetime
 
+from scipy.stats import entropy
+
 # In case some pseudo-classes are unoccupied and p_z = 0
 np.seterr(divide='ignore', invalid='ignore')
 
@@ -92,28 +94,45 @@ def NCE_succinct(Z,Y):
 
 #%%
 
+def NCE_new(Z,Y):
+    """
+    Z :: source label (N vector)
+    Y :: target label (N vector)
+    returns nce :: numerical measure of source dataset
+    to target dataset transferability
+    new version
+    """
+    YZ = np.column_stack((Y,Z))
+    return entropy(np.unique(Z,return_counts=True,axis=0)[1]/len(Z)) \
+        -entropy(np.unique(YZ,return_counts=True,axis=0)[1]/len(YZ))
+#%%
+
 # Testing equivalence of NCE score functions
 
-# Z = np.array([0,1,0,2,1,3])
-# Y = np.array([0,1,0,2,2,1])
+Z = np.array([0,1,0,2,1,3])
+Y = np.array([0,1,0,2,2,1])
 
-# print(f"Z:\n{Z}")
-# print(f"Y:\n{Y}")
-# print()
+print(f"Z:\n{Z}")
+print(f"Y:\n{Y}")
+print()
 
-# t0 = datetime.datetime.now()
-# print(f"Original: {NCE(Z,Y)}")
-# t1 = datetime.datetime.now()
-# print((t1-t0))
-# print()
-# t0 = datetime.datetime.now()
-# print(f"Verbose: {NCE_verbose(Z,Y)}")
-# t1 = datetime.datetime.now()
-# print((t1-t0))
-# print()
-# t0 = datetime.datetime.now()
-# print(f"Succinct: {NCE_succinct(Z,Y)}")
-# t1 = datetime.datetime.now()
-# print((t1-t0))
-
+t0 = datetime.datetime.now()
+print(f"Original: {NCE(Z,Y)}")
+t1 = datetime.datetime.now()
+print((t1-t0))
+print()
+t0 = datetime.datetime.now()
+print(f"Verbose: {NCE_verbose(Z,Y)}")
+t1 = datetime.datetime.now()
+print((t1-t0))
+print()
+t0 = datetime.datetime.now()
+print(f"Succinct: {NCE_succinct(Z,Y)}")
+t1 = datetime.datetime.now()
+print((t1-t0))
+print()
+t0 = datetime.datetime.now()
+print(f"New: {NCE_new(Z,Y)}")
+t1 = datetime.datetime.now()
+print((t1-t0))
 #%%
