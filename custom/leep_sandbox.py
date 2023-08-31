@@ -79,9 +79,9 @@ def LEEP_succinct(A,Y):
     """
     N,Kz=A.shape
     An=A/N
-    Ky=int(np.max(Y) + 1)
-    joint=np.zeros((Ky, Kz))
-    for y in range(Ky): joint[y] = np.sum(An[Y == y], axis=0)
+    Ky=int(np.max(Y)+1)
+    joint=np.zeros((Ky,Kz))
+    for y in range(Ky): joint[y]=np.sum(An[Y==y],axis=0)
     conditional=(joint/joint.sum(axis=0)).T
     marginal=A@conditional
     EEP=np.array([py[y] for py,y in zip(marginal,Y)])
@@ -91,26 +91,26 @@ def LEEP_succinct(A,Y):
 
 # Testing equivalence of LEEP score functions
 
-# A = np.array([[0.3,0.7],[0.2,0.8],[0.9,0.1],[0.55,0.45]])
-# Y = np.array([1,1,0,0])
+A = np.array([[0.3,0.7],[0.2,0.8],[0.9,0.1],[0.55,0.45]])
+Y = np.array([1,1,0,0])
 
-# print(f"A:\n{A}")
-# print(f"Y:\n{Y}")
-# print()
+print(f"A:\n{A}")
+print(f"Y:\n{Y}")
+print()
 
-# t0 = datetime.datetime.now()
-# print(f"Original: {LEEP(A,Y)}")
-# t1 = datetime.datetime.now()
-# print((t1-t0))
-# print()
-# t0 = datetime.datetime.now()
-# print(f"Verbose: {LEEP_verbose(A,Y)}")
-# t1 = datetime.datetime.now()
-# print((t1-t0))
-# print()
-# t0 = datetime.datetime.now()
-# print(f"Succinct: {LEEP_succinct(A,Y)}")
-# t1 = datetime.datetime.now()
-# print((t1-t0))
+t0 = datetime.datetime.now()
+print(f"Original: {LEEP(A,Y)}")
+t1 = datetime.datetime.now()
+print((t1-t0))
+print()
+t0 = datetime.datetime.now()
+print(f"Verbose: {LEEP_verbose(A,Y)}")
+t1 = datetime.datetime.now()
+print((t1-t0))
+print()
+t0 = datetime.datetime.now()
+print(f"Succinct: {LEEP_succinct(A,Y)}")
+t1 = datetime.datetime.now()
+print((t1-t0))
 
 #%%
