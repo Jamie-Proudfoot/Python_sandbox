@@ -89,3 +89,10 @@ print(f'Original: {logme.fit(F,Y)}')
 print(f'Succinct: {LogME_succinct(F,Y)}')
 
 #%%
+# N-LEEP
+
+from nleep_sandbox import NLEEP_succinct
+logme = LogME(regression=False)
+print(f'Succinct: {NLEEP_succinct(F,Y)}')
+
+#%%
