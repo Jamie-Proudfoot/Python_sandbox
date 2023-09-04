@@ -73,7 +73,8 @@ def NLEEP_succinct(F,Y,p=0.9,Kv=7):
 
 #%%
 
-# Testing equivalence of LEEP score functions
+# Testing equivalence of N-LEEP score functions
+
 # N = 100
 # Ky = 2
 # Df = 5
