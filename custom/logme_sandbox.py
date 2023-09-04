@@ -54,11 +54,11 @@ def truncated_svd(x):
     u, s, vh = np.linalg.svd(x.transpose() @ x)
     s = np.sqrt(s)
     u_times_sigma = x @ vh.transpose()
-    K = np.sum((s > 1e-10) * 1)  # rank of F
+    R = np.sum((s > 1e-10) * 1)  # rank of F
     s = s.reshape(-1, 1)
-    s = s[:K]
-    vh = vh[:K]
-    u = u_times_sigma[:, :K] / s.reshape(1, -1)
+    s = s[:R]
+    vh = vh[:R]
+    u = u_times_sigma[:, :R] / s.reshape(1, -1)
     return u, s, vh
 truncated_svd(np.random.randn(20, 10).astype(np.float64))
 
@@ -84,14 +84,14 @@ class LogME(object):
         "Ranking and Tuning Pre-trained Models: A New Paradigm of Exploiting Model Hubs"
         at https://arxiv.org/abs/2110.10545
         """
-        N, Df = F.shape  # K = min(N, Df)
+        N, Df = F.shape  # R = min(N, Df)
         if N > Df: # direct SVD may be expensive
             u, s, vh = truncated_svd(F)
         else:
             u, s, vh = np.linalg.svd(F, full_matrices=False)
-        # u.shape = N x K
-        # s.shape = K
-        # vh.shape = K x Df
+        # u.shape = N x R
+        # s.shape = R
+        # vh.shape = R x Df
         s = s.reshape(-1, 1)
         sigma = (s ** 2)
 
@@ -100,9 +100,9 @@ class LogME(object):
         for i in range(self.num_dim):
             y_ = y[:, i] if self.regression else (y == i).astype(np.float64)
             y_ = y_.reshape(-1, 1)
-            x = u.T @ y_  # x has shape [K, 1], but actually x should have shape [N, 1]
+            x = u.T @ y_  # x has shape [R, 1], but actually x should have shape [N, 1]
             x2 = x ** 2
-            res_x2 = (y_ ** 2).sum() - x2.sum()  # if K < N, we compute sum of xi for 0 singular values directly
+            res_x2 = (y_ ** 2).sum() - x2.sum()  # if R < N, we compute sum of xi for 0 singular values directly
 
             alpha, beta = 1.0, 1.0
             for _ in range(11):
@@ -240,12 +240,12 @@ def trunc_svd(x):
     u, s, vh = np.linalg.svd(x.T@x)
     s = np.sqrt(s)
     u_times_sigma = x@vh.T
-    # K is the rank of F
-    K = np.sum(s > 1e-10)
+    # R is the rank of F
+    R = np.sum(s > 1e-10)
     s = s.reshape(-1, 1)
-    s = s[:K]
-    vh = vh[:K]
-    u = u_times_sigma[:,:K]/s.reshape(1, -1)
+    s = s[:R]
+    vh = vh[:R]
+    u = u_times_sigma[:,:R]/s.reshape(1, -1)
     # Retain only the kth most important values
     return u, s, vh
 # Precompile with numba for speed
