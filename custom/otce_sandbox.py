@@ -1,6 +1,7 @@
 #%%
 import numpy as np
 import datetime
+import ot
 
 from scipy.stats import entropy
 
@@ -11,8 +12,9 @@ from scipy.optimize import linear_sum_assignment
 
 def OTCE_verbose(Fs,F,Z,Y,lamb=(1,1,1)):
     """
-    Fs :: source hidden representations (N*Df matrix)
-    F :: target hidden representations (Ft) (N*Df matrix)
+    feature_extractor :: source feature function (fs)
+    Xs :: source input data (N*Ds matrix)
+    X :: target input data (Xt) (N*Dt matrix)
     Z :: source output labels (Ys) (N vector)
     Y :: target output labels (Yt) (N vector)
     lamb :: tuple of hyperparameters (b,lambda1,lambda2)
@@ -20,10 +22,11 @@ def OTCE_verbose(Fs,F,Z,Y,lamb=(1,1,1)):
     to target dataset transferability
     verbose version
     """
-    # Compute domain difference (1-Wasserstein distance)
-    d = cdist(Fs, F)
-    assignment = linear_sum_assignment(d)
-    WD = np.sum(d[assignment])/len(F)
+    # Cost matrix
+    C = ot.dist(Fs,F)
+    # Sinkhorn algorithm 1-Wasserstein distance
+    WD = ot.emd2(Fs,F,C)
+    print(WD)
     # Compute conditional entropy (CE)
     YZ = np.column_stack((Y,Z))
     CE = entropy(np.unique(YZ,return_counts=True,axis=0)[1]/len(YZ)) \
@@ -57,14 +60,14 @@ def OTCE_succinct(Fs,F,Z,Y,lamb=(1,1,1)):
 
 # Testing equivalence of OTCE functions
 
-Fs = np.random.randn(50,20)
-F = np.random.randn(50,20)
+Fs = np.random.randn(50,4)
+F = np.random.randn(50,4)
 Z = np.random.randint(2,size=50)
 Y = np.random.randint(2,size=50)
 
-# print(f"Fs[:10]:\n{Fs[:10]}")
+print(f"Fs[:10]:\n{Fs[:10]}")
 print(f"Z[:10]:\n{Z[:10]}")
-# print(f"F[:10]:\n{F[:10]}")
+print(f"F[:10]:\n{F[:10]}")
 print(f"Y[:10]:\n{Y[:10]}")
 print()
 
