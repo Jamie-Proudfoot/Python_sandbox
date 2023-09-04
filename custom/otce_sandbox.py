@@ -25,8 +25,7 @@ def OTCE_verbose(Fs,F,Z,Y,lamb=(1,1,1)):
     # Cost matrix
     C = ot.dist(Fs,F)
     # Sinkhorn algorithm 1-Wasserstein distance
-    WD = ot.emd2(Fs,F,C)
-    print(WD)
+    WD = ot.emd2(ot.unif(len(Fs)),ot.unif(len(F)),C)
     # Compute conditional entropy (CE)
     YZ = np.column_stack((Y,Z))
     CE = entropy(np.unique(YZ,return_counts=True,axis=0)[1]/len(YZ)) \
@@ -48,9 +47,8 @@ def OTCE_succinct(Fs,F,Z,Y,lamb=(1,1,1)):
     to target dataset transferability
     succinct version
     """
-    d = cdist(Fs, F)
-    assignment = linear_sum_assignment(cdist(Fs, F))
-    WD = np.sum(d[assignment])/len(F)
+    C = ot.dist(Fs,F)
+    WD = ot.emd2(ot.unif(len(Fs)),ot.unif(len(F)),C)
     YZ=np.column_stack((Y,Z))
     CE=entropy(np.unique(YZ,return_counts=True,axis=0)[1]/len(YZ)) \
     -entropy(np.unique(Z,return_counts=True,axis=0)[1]/len(Z))
@@ -60,8 +58,8 @@ def OTCE_succinct(Fs,F,Z,Y,lamb=(1,1,1)):
 
 # Testing equivalence of OTCE functions
 
-Fs = np.random.randn(50,4)
-F = np.random.randn(50,4)
+Fs = np.random.randn(50,1)
+F = np.random.randn(50,1)
 Z = np.random.randint(2,size=50)
 Y = np.random.randint(2,size=50)
 
