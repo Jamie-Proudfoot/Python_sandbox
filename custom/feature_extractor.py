@@ -39,10 +39,11 @@ feature_extractor = keras.Model(
 print("The feature extractor method is called on test data")
 N = 600
 D = 250
-# One 250x250 RGB image as input data
-X = np.random.randn(N, D, D, K)
-# X = np.ones((N, D, D, 3))
+# RGB images as input data
+X = np.random.randn(N, D, D, 3)
+Xs = np.random.randn(N, D, D, 3)
 X = tf.convert_to_tensor(X)
+Xs = tf.convert_to_tensor(Xs)
 print(np.array(X).shape)
 # One classification label as output data
 Y = np.random.randint(3, size=(1,N))
@@ -54,8 +55,10 @@ print(A)
 Z = A.argmax(axis=-1)
 print(Z)
 # Extracted features for this image
-features = feature_extractor(X)
-F = np.array(features).reshape(N,-1)
+F = feature_extractor(X)
+F = np.array(F).reshape(N,-1)
+Fs = feature_extractor(Xs)
+Fs = np.array(Fs).reshape(N,-1)
 print(F.shape)
 
 #%%
@@ -95,8 +98,15 @@ print(f'Succinct: {LogME_succinct(F,Y)}')
 # N-LEEP
 
 from nleep_sandbox import NLEEP_verbose, NLEEP_succinct
-logme = LogME(regression=False)
 print(f'Verbose: {NLEEP_verbose(F,Y)}')
 print(f'Succinct: {NLEEP_succinct(F,Y)}')
+
+#%%
+# OTCE
+
+from otce_sandbox import OTCE, OTCE_succinct, OTCE_verbose
+print(f'Original: {OTCE(Fs,F,Z,Y)}')
+print(f'Verbose: {OTCE_verbose(Fs,F,Z,Y)}')
+print(f'Succinct: {OTCE_succinct(Fs,F,Z,Y)}')
 
 #%%
