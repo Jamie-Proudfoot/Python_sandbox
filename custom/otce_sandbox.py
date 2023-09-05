@@ -3,10 +3,9 @@ import numpy as np
 import datetime
 import ot
 
+from tensorflow.python.ops.numpy_ops import np_config
 from scipy.stats import entropy
-
-from scipy.spatial.distance import cdist
-from scipy.optimize import linear_sum_assignment
+from sklearn.metrics.pairwise import euclidean_distances
 
 #%%
 
@@ -23,7 +22,7 @@ def OTCE_verbose(Fs,F,Z,Y,lamb=(1,1,1)):
     verbose version
     """
     # Cost matrix
-    C = ot.dist(Fs,F)
+    C = np.square(euclidean_distances(Fs,F))
     # Sinkhorn algorithm 1-Wasserstein distance
     WD = ot.emd2(ot.unif(len(Fs)),ot.unif(len(F)),C)
     # Compute conditional entropy (CE)
@@ -47,7 +46,7 @@ def OTCE_succinct(Fs,F,Z,Y,lamb=(1,1,1)):
     to target dataset transferability
     succinct version
     """
-    C = ot.dist(Fs,F)
+    C = np.square(euclidean_distances(Fs,F))
     WD = ot.emd2(ot.unif(len(Fs)),ot.unif(len(F)),C)
     YZ=np.column_stack((Y,Z))
     CE=entropy(np.unique(YZ,return_counts=True,axis=0)[1]/len(YZ)) \
@@ -58,8 +57,8 @@ def OTCE_succinct(Fs,F,Z,Y,lamb=(1,1,1)):
 
 # Testing equivalence of OTCE functions
 
-Fs = np.random.randn(50,1)
-F = np.random.randn(50,1)
+Fs = np.random.randn(50,2)
+F = np.random.randn(50,2)
 Z = np.random.randint(2,size=50)
 Y = np.random.randint(2,size=50)
 
