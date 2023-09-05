@@ -1,7 +1,5 @@
 {
     "python.analysis.extraPaths": [
         "./custom",
-        "./custom",
-        "./custom"
     ],
 }
