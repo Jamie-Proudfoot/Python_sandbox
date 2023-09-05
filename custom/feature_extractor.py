@@ -35,6 +35,7 @@ feature_extractor = keras.Model(
 
 #%% 
 
+# Data generation
 print("The feature extractor method is called on test data")
 N = 600
 D = 250
@@ -60,7 +61,7 @@ print(F.shape)
 #%%
 # H-Score
 
-from modules.hscore_sandbox import HScore, HScore_verbose, HScore_succinct, HScore_regularised
+from hscore_sandbox import HScore, HScore_verbose, HScore_succinct, HScore_regularised
 print(f'Original: {HScore(F,Y)}')
 print(f'Verbose: {HScore_verbose(F,Y)}')
 print(f'Succinct: {HScore_succinct(F,Y)}')
@@ -69,7 +70,7 @@ print(f'Regularised: {HScore_regularised(F,Y)}')
 #%%
 # NCE
 
-from modules.nce_sandbox import NCE, NCE_verbose, NCE_succinct
+from nce_sandbox import NCE, NCE_verbose, NCE_succinct
 print(f'Original: {NCE(Z,Y)}')
 print(f'Verbose: {NCE_verbose(Z,Y)}')
 print(f'Succinct: {NCE_succinct(Z,Y)}')
@@ -77,7 +78,7 @@ print(f'Succinct: {NCE_succinct(Z,Y)}')
 #%%
 # LEEP
 
-from modules.leep_sandbox import LEEP, LEEP_verbose, LEEP_succinct
+from leep_sandbox import LEEP, LEEP_verbose, LEEP_succinct
 print(f'Original: {LEEP(A,Y)}')
 print(f'Verbose: {LEEP_verbose(A,Y)}')
 print(f'Succinct: {LEEP_succinct(A,Y)}')
@@ -85,7 +86,7 @@ print(f'Succinct: {LEEP_succinct(A,Y)}')
 #%%
 # LogME
 
-from modules.logme_sandbox import LogME, LogME_succinct
+from logme_sandbox import LogME, LogME_succinct
 logme = LogME(regression=False)
 print(f'Original: {logme.fit(F,Y)}')
 print(f'Succinct: {LogME_succinct(F,Y)}')
@@ -93,7 +94,7 @@ print(f'Succinct: {LogME_succinct(F,Y)}')
 #%%
 # N-LEEP
 
-from modules.nleep_sandbox import NLEEP_verbose, NLEEP_succinct
+from nleep_sandbox import NLEEP_verbose, NLEEP_succinct
 logme = LogME(regression=False)
 print(f'Verbose: {NLEEP_verbose(F,Y)}')
 print(f'Succinct: {NLEEP_succinct(F,Y)}')
