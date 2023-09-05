@@ -1,9 +1,11 @@
 #%%
 import numpy as np
 import datetime
-import ot
 
 from tensorflow.python.ops.numpy_ops import np_config
+np_config.enable_numpy_behavior()
+import ot
+
 from scipy.stats import entropy
 from sklearn.metrics.pairwise import euclidean_distances
 
