@@ -94,6 +94,8 @@ def NCE_succinct(Z,Y):
 
 #%%
 
+# Modified code (new formulation). Author: JamieProudfoot.
+
 def NCE_new(Z,Y):
     """
     Z :: source label (N vector)

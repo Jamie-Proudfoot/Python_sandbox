@@ -84,6 +84,8 @@ def OTCE(Fs,F,Z,Y,lamb=(1,1,1)):
 
 #%%
 
+# Verbose code. Author: JamieProudfoot.
+
 def OTCE_verbose(Fs,F,Z,Y,lamb=(1,1,1)):
     """
     Fs :: source hidden representations (N*Df matrix)
@@ -110,6 +112,8 @@ def OTCE_verbose(Fs,F,Z,Y,lamb=(1,1,1)):
 
 
 #%%
+
+# Succinct code. Author: JamieProudfoot.
 
 def OTCE_succinct(Fs,F,Z,Y,lamb=(1,1,1)):
     """

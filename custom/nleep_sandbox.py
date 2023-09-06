@@ -10,18 +10,23 @@ from sklearn.mixture import GaussianMixture
 
 #%%
 
+# Verbose code. Author: JamieProudfoot.
+
 def NLEEP_verbose(F,Y,p=0.9,Kv=7):
     """
     F :: 'feature function' (N*Df matrix)
     Y :: Target label (N*r matrix if regression, N vector if classification)
     p :: Dr/Df where Dr is the PCA-reduced dimensionality [0.5, 0.9]
     Kv :: Number of Gaussian components in the GMMs used [1, 7]
+    returns :: N-LEEP (Gaussian LEEP) measure to
+    predict the success of transfer learning
     verbose version
     """
     # N: number of data points, Df: dimensionality of hidden representation
     N, Df = F.shape
     # Ky: number of target label classes
     Ky = int(np.max(Y) + 1)
+    # PCA-reduced dimensions
     Dr = int(np.rint(Df*p))
     # PCA-reduced representation R
     pca = PCA(n_components=Dr)
@@ -47,12 +52,16 @@ def NLEEP_verbose(F,Y,p=0.9,Kv=7):
 
 #%%
 
+# Succinct code. Author: JamieProudfoot.
+
 def NLEEP_succinct(F,Y,p=0.9,Kv=7):
     """
     F :: 'feature function' (N*Df matrix)
     Y :: Target label (N*r matrix if regression, N vector if classification)
     p :: Dr/Df where Dr is the PCA-reduced dimensionality [0.5, 0.9]
     Kv :: Number of Gaussian components in the GMMs used [1, 7]
+    returns :: N-LEEP (Gaussian LEEP) measure to
+    predict the success of transfer learning
     succinct version
     """
     N,Df=F.shape
@@ -80,7 +89,7 @@ def NLEEP_succinct(F,Y,p=0.9,Kv=7):
 # Df = 5
 
 # F = np.array(np.random.randint(2,size=(N,Df)),dtype=np.float64)
-# Y = np.random.randint(2,size=N)
+# Y = np.random.randint(Ky,size=N)
 
 # print(f"F[:10]:\n{F[:10]}")
 # print(f"Y[:10]:\n{Y[:10]}")
