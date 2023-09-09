@@ -21,7 +21,6 @@ from sklearn.decomposition import PCA
 # Verbose code. Author: JamieProudfoot.
 
 # Helper function for per-class sample statistics
-
 def class_stats(X, Y, c):
     """
     X :: features (N*D matrix)
@@ -91,15 +90,10 @@ def GBC_succinct(F,Y,p=0.9):
     predict the success of transfer learning
     verbose version
     """
-    N,Df=F.shape
     Ky=int(Y.max()+1)
-    Dr=int(np.rint(Df*p))
-    pca=PCA(n_components=Dr)
-    R=pca.fit_transform(F)
+    R=PCA(n_components=int(np.rint(F.shape[1]*p))).fit_transform(F)
     S = [class_stats(R,Y,c) for c in range(Ky)]
-    triu = np.transpose(np.triu_indices(Ky,1))
-    gbc = [BC(*S[t[0]],*S[t[1]]) for t in triu]
-    return -2*sum(gbc)
+    return -2*sum([BC(*S[t[0]],*S[t[1]]) for t in np.transpose(np.triu_indices(Ky,1))])
 
 #%%
 
