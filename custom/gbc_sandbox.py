@@ -21,7 +21,8 @@ from sklearn.decomposition import PCA
 # Verbose code. Author: JamieProudfoot.
 
 # Helper function for per-class sample statistics
-def class_stats(X, Y):
+
+def class_stats(X, Y, c):
     """
     X :: features (N*D matrix)
     Y :: labels (N matrix)
@@ -30,13 +31,11 @@ def class_stats(X, Y):
     where mu_c is the sample mean of all X in class c
     and var_c is the sample variance of all X in class c
     """
-    Ky = int(Y.max() + 1)
-    means = [np.mean(X[Y==c],axis=0) for c in range(Ky)]
-    vars = [np.max(np.var(X[Y==c],ddof=1,axis=0),1e-4) for c in range(Ky)]
-    return means, vars
+    Xc = X[Y==c]
+    return (np.mean(Xc,axis=0),np.var(Xc,ddof=1,axis=0))
 
 # Helper function for Gaussian Bhattacharyya Coefficient
-def BC(mu_cl, mu_ck, var_cl, var_ck):
+def BC(mu_cl, var_cl, mu_ck, var_ck):
     """
     X :: features (N*D matrix)
     Y :: labels (N matrix)
@@ -72,11 +71,11 @@ def GBC_verbose(F, Y, p=0.9):
     pca = PCA(n_components=Dr)
     R = pca.fit_transform(F)
     # Compute class statistics
-    means, vars = class_stats(R,Y)
+    S = [class_stats(R,Y,c) for c in range(Ky)]
     # Pairs of classes cl != ck without repeats
     triu = np.transpose(np.triu_indices(Ky,1))
     # Array of Bhattacharyya Coefficients
-    gbc = [BC(means[t[0]],means[t[1]],vars[t[0]],vars[t[1]]) for t in triu]
+    gbc = [BC(*S[t[0]],*S[t[1]]) for t in triu]
     return -2*sum(gbc)
 
 #%%
@@ -97,14 +96,14 @@ def GBC_succinct(F,Y,p=0.9):
     Dr=int(np.rint(Df*p))
     pca=PCA(n_components=Dr)
     R=pca.fit_transform(F)
-    means, vars = class_stats(R,Y)
+    S = [class_stats(R,Y,c) for c in range(Ky)]
     triu = np.transpose(np.triu_indices(Ky,1))
-    gbc = [BC(means[t[0]],means[t[1]],vars[t[0]],vars[t[1]]) for t in triu]
+    gbc = [BC(*S[t[0]],*S[t[1]]) for t in triu]
     return -2*sum(gbc)
 
 #%%
 
-# Testing equivalence of N-LEEP score functions
+# Testing equivalence of GBC score functions
 
 N = 100
 Ky = 4
