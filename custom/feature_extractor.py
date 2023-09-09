@@ -61,6 +61,8 @@ Fs = feature_extractor(Xs)
 Fs = np.array(Fs).reshape(N,-1)
 print(F.shape)
 
+#####
+
 #%%
 # H-Score
 
@@ -108,5 +110,13 @@ from otce_sandbox import OTCE, OTCE_succinct, OTCE_verbose
 print(f'Original: {OTCE(Fs,F,Z,Y)}')
 print(f'Verbose: {OTCE_verbose(Fs,F,Z,Y)}')
 print(f'Succinct: {OTCE_succinct(Fs,F,Z,Y)}')
+
+#%%
+# GBC
+
+from gbc_sandbox import GBC, GBC_succinct, GBC_verbose
+print(f'Original: {GBC(F,Y,"diagonal")}')
+print(f'Verbose: {GBC_verbose(F,Y)}')
+print(f'Succinct: {GBC_succinct(F,Y)}')
 
 #%%

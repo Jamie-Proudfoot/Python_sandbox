@@ -55,10 +55,11 @@ def compute_per_class_mean_and_variance(features, target_labels, unique_labels):
     per_class_stats[label]['mean'] = mean
     # Avoid 0 variance in cases of constant features with tf.maximum
     per_class_stats[label]['variance'] = tf.maximum(variance, 1e-4)
+    # per_class_stats[label]['variance'] = variance
   return per_class_stats
 
 
-def get_gbc_score(features, target_labels, gaussian_type, p=0.9):
+def GBC(features, target_labels, gaussian_type, p=0.9):
   """Compute Gaussian Bhattacharyya Coefficient (GBC).
 
   Args:
@@ -74,14 +75,12 @@ def get_gbc_score(features, target_labels, gaussian_type, p=0.9):
 
   # PCA reduction of features added here (modified)
   features = PCA(n_components=int(np.rint(features.shape[1]*p))).fit_transform(features)
-
   # List of all classes
   unique_labels, _ = tf.unique(target_labels)
   unique_labels = list(unique_labels)
   # Compute per-class stats (mean and variance)
   per_class_stats = compute_per_class_mean_and_variance(
       features, target_labels, unique_labels)
-
   # Loop over pairs of classes c1 != c2
   per_class_bhattacharyya_distance = []
   for c1 in unique_labels:
@@ -117,7 +116,7 @@ def class_stats(X, Y, c):
     """
     Xc = X[Y==c]
     # Original code uses ddof=0 (no Bessel correction)
-    return (np.mean(Xc,axis=0),np.var(Xc,ddof=1,axis=0))
+    return (np.mean(Xc,axis=0),np.maximum(np.var(Xc,ddof=1,axis=0),1e-4))
 
 # Helper function for Gaussian Bhattacharyya Coefficient
 def BC(mu_cl, var_cl, mu_ck, var_ck):
@@ -185,30 +184,30 @@ def GBC_succinct(F,Y,p=0.9):
 
 # Testing equivalence of GBC score functions
 
-N = 100
-Ky = 4
-Df = 5
+# N = 100
+# Ky = 4
+# Df = 5
 
-F = np.array(np.random.randint(2,size=(N,Df)),dtype=np.float64)
-Y = np.random.randint(Ky,size=N)
+# F = np.array(np.random.randint(2,size=(N,Df)),dtype=np.float64)
+# Y = np.random.randint(Ky,size=N)
 
-print(f"F[:10]:\n{F[:10]}")
-print(f"Y[:10]:\n{Y[:10]}")
-print()
+# print(f"F[:10]:\n{F[:10]}")
+# print(f"Y[:10]:\n{Y[:10]}")
+# print()
 
-t0 = datetime.datetime.now()
-print(f"Original: {get_gbc_score(F,Y,'diagonal')}")
-t1 = datetime.datetime.now()
-print((t1-t0))
-print()
-t0 = datetime.datetime.now()
-print(f"Verbose: {GBC_verbose(F,Y)}")
-t1 = datetime.datetime.now()
-print((t1-t0))
-print()
-t0 = datetime.datetime.now()
-print(f"Succinct: {GBC_succinct(F,Y)}")
-t1 = datetime.datetime.now()
-print((t1-t0))
+# t0 = datetime.datetime.now()
+# print(f"Original: {GBC(F,Y,'diagonal')}")
+# t1 = datetime.datetime.now()
+# print((t1-t0))
+# print()
+# t0 = datetime.datetime.now()
+# print(f"Verbose: {GBC_verbose(F,Y)}")
+# t1 = datetime.datetime.now()
+# print((t1-t0))
+# print()
+# t0 = datetime.datetime.now()
+# print(f"Succinct: {GBC_succinct(F,Y)}")
+# t1 = datetime.datetime.now()
+# print((t1-t0))
 
 #%%
