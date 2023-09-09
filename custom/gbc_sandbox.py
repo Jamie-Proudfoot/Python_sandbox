@@ -116,7 +116,8 @@ def class_stats(X, Y, c):
     and var_c is the sample variance of all X in class c
     """
     Xc = X[Y==c]
-    return (np.mean(Xc,axis=0),np.var(Xc,ddof=0,axis=0))
+    # Original code uses ddof=0 (no Bessel correction)
+    return (np.mean(Xc,axis=0),np.var(Xc,ddof=1,axis=0))
 
 # Helper function for Gaussian Bhattacharyya Coefficient
 def BC(mu_cl, var_cl, mu_ck, var_ck):
