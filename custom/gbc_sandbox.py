@@ -88,7 +88,7 @@ def GBC_succinct(F,Y,p=0.9):
     p :: Dr/Df where Dr is the PCA-reduced dimensionality [0.5, 0.9]
     returns :: GBC (Gaussian Bhattacharyya Coefficient) measure to
     predict the success of transfer learning
-    verbose version
+    succinct version
     """
     Ky=int(Y.max()+1)
     R=PCA(n_components=int(np.rint(F.shape[1]*p))).fit_transform(F)
