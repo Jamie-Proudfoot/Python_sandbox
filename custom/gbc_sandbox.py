@@ -7,8 +7,20 @@ from sklearn.decomposition import PCA
 
 #%%
 
+# Original code. Author: Google-Research. 
+
+# Github: https://github.com/google-research/google-research/blob/b7cb09ba04bf018f1ba1131ccd4c69be617e8e2f/stable_transfer/transferability/gbc.py#L27
+
+# Comments added here. Author: JamieProudfoot.
+
+
+
+
+#%%
+
 # Verbose code. Author: JamieProudfoot.
 
+# Helper function for per-class sample statistics
 def class_stats(X, Y):
     """
     X :: features (N*D matrix)
@@ -20,9 +32,10 @@ def class_stats(X, Y):
     """
     Ky = int(Y.max() + 1)
     means = [np.mean(X[Y==c],axis=0) for c in range(Ky)]
-    vars = [np.var(X[Y==c],ddof=1,axis=0) for c in range(Ky)]
+    vars = [np.max(np.var(X[Y==c],ddof=1,axis=0),1e-4) for c in range(Ky)]
     return means, vars
 
+# Helper function for Gaussian Bhattacharyya Coefficient
 def BC(mu_cl, mu_ck, var_cl, var_ck):
     """
     X :: features (N*D matrix)
@@ -63,8 +76,8 @@ def GBC_verbose(F, Y, p=0.9):
     # Pairs of classes cl != ck without repeats
     triu = np.transpose(np.triu_indices(Ky,1))
     # Array of Bhattacharyya Coefficients
-    b = [BC(means[t[0]],means[t[1]],vars[t[0]],vars[t[1]]) for t in triu]
-    return -2*sum(b)
+    gbc = [BC(means[t[0]],means[t[1]],vars[t[0]],vars[t[1]]) for t in triu]
+    return -2*sum(gbc)
 
 #%%
 
@@ -86,8 +99,8 @@ def GBC_succinct(F,Y,p=0.9):
     R=pca.fit_transform(F)
     means, vars = class_stats(R,Y)
     triu = np.transpose(np.triu_indices(Ky,1))
-    b = [BC(means[t[0]],means[t[1]],vars[t[0]],vars[t[1]]) for t in triu]
-    return -2*sum(b)
+    gbc = [BC(means[t[0]],means[t[1]],vars[t[0]],vars[t[1]]) for t in triu]
+    return -2*sum(gbc)
 
 #%%
 
