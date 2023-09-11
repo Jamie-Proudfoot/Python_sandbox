@@ -27,15 +27,15 @@ def RER(W,R,Yb,L,v0):
 	"""
     N,Dr = R.shape
     Ky = Yb.shape[1]
-	# w weights shape (Dr,Ky)
+    # w weights shape (Dr,Ky)
     w = W[:(Dr*Ky)].reshape(Dr,Ky)
-	# b bias shape (Ky)
+    # b bias shape (Ky)
     b = W[(Dr*Ky):]
-	# NN output linear approximation
+    # NN output linear approximation
     G = R@w+b
-	# Categorial crossentropy loss function
+    # Categorial crossentropy loss function
     loss = (1/N)*np.sum(-np.sum(Yb*G,axis=1)+np.log(np.sum(np.exp(G),axis=1)))
-	# L2 regularisation term
+    # L2 regularisation term
     l2 = np.sum(np.square(W))
     return loss + (1/(2*L*v0))*l2
 
@@ -52,11 +52,11 @@ def dRER(W,R,Yb,L,v0):
 	"""
     N,Dr = R.shape
     Ky = Yb.shape[1]
-	# w weights shape (Dr,Ky)
+    # w weights shape (Dr,Ky)
     w = W[:(Dr*Ky)].reshape(Dr,Ky)
-	# b bias shape (Ky)
+    # b bias shape (Ky)
     b = W[(Dr*Ky):]
-	# NN output linear approximation
+    # NN output linear approximation
     G = R@w+b
     # Compute label probabilities
     A = softmax(G,axis=1)
@@ -85,18 +85,18 @@ def PACTran_verbose(F,Y,p=0.9):
     N,Df = F.shape
     # Dr: PCA-reduced feature dimension
     Dr = int(np.rint(Df*p))
-	# L: lambda parameter
+    # L: lambda parameter
     L = N*Dr/20
-	# v0: estimated variance parameter
+    # v0: estimated variance parameter
     v0 = 100/Dr
-	# Ky : number of classes
+    # Ky : number of classes
     Ky = int(Y.max()+1)
-	# One-hot encoded labels
+    # One-hot encoded labels
     Yb = (np.arange(Ky)==Y.reshape(N,1)).astype(int)
-	# Generate PCA-reduced features
+    # Generate PCA-reduced features
     pca = PCA(n_components=Dr)
     R = pca.fit_transform(F)
-	# L-BFGS optimisation of categorical crossentropy loss
+    # L-BFGS optimisation of categorical crossentropy loss
     # Random initialisation
     W0 = np.random.normal(size=((Dr+1)*Ky))
     clbk.iteration = 0
@@ -109,20 +109,20 @@ def PACTran_verbose(F,Y,p=0.9):
     weights = np.array(clbk.weights)
     RERs = np.array([RER(w,R,Yb,L,v0) for w in weights])
     plt.plot(iterations,RERs)
-	# Optimised parameters
+    # Optimised parameters
     Wopt = opt.x
     wopt = Wopt[:(Dr*Ky)].reshape(Dr,Ky)
     bopt = Wopt[(Dr*Ky):]
     # Optimised loss
     RERopt = opt.fun
-	# Optimised label predictions
+    # Optimised label predictions
     Gopt = R@wopt+bopt
     Aopt = softmax(Gopt,axis=1)
-	# Trace of optimised RER Hessian
+    # Trace of optimised RER Hessian
     d2Ldw2 = (1/N)*np.square(R).T@(Aopt-np.square(Aopt))
     d2Ldb2 = (1/N)*np.sum(Aopt-np.square(Aopt),axis=0)
     TrHess = np.sum(d2Ldw2) + np.sum(d2Ldb2)
-	# Return PACTran_Gauss result
+    # Return PACTran_Gauss result
     return RERopt + (Ky*Dr/(2*L))*np.log(1+(L*v0/(Ky*Dr))*TrHess)
 
 #%%
