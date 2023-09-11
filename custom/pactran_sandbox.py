@@ -67,7 +67,10 @@ def dRER(W,R,Yb,L,v0):
     return np.concatenate((dLdw.flatten(),dLdb))
 
 def clbk(W):
-    # Custom processing and display of iteration values
+    """
+    Custom callback function for storing intermediate
+    L-BFGS optimisation steps
+    """
     clbk.iterations.append(clbk.iteration)
     clbk.weights.append(W)
     clbk.iteration += 1
