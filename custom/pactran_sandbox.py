@@ -106,7 +106,6 @@ def PACTran_verbose(F,Y,p=0.9):
     weights = np.array(clbk.weights)
     RERs = np.array([RER(w,R,Yb,L,v0) for w in weights])
     plt.plot(iterations,RERs)
-    plt.savefig
 	# Optimised parameters
     Wopt = opt.x
     wopt = Wopt[:(Dr*Ky)].reshape(Dr,Ky)
