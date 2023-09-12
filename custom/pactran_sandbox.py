@@ -89,8 +89,10 @@ def PACTran(F,Y,lda_factor,p=0.9):
     grad2_f = prob_logits - np.square(prob_logits)  # [N, Ky]
     xx = np.square(F)  # [N, D]
 
+    # 1/N factor not included here (potential error)
     grad2_w = np.matmul(xx.transpose(), grad2_f)  # [D, Ky]
     grad2_w += 1. / ldas2
+    # 1/N factor not included here (potential error)
     grad2_b = np.sum(grad2_f, axis=0, keepdims=True)  # [1, Ky]
     grad2 = np.ravel(np.concatenate([grad2_w, grad2_b], axis=0))
     return grad2
@@ -160,10 +162,10 @@ def RER(W,R,Yb,L,v0):
     # Categorial crossentropy loss function
     loss = (1/N)*np.sum(-np.sum(Yb*G,axis=1)+np.log(np.sum(np.exp(G),axis=1)))
     # L2 regularisation term
-    l2 = np.sum(np.square(W))
+    l2 = np.sum(np.square(w))
     return loss + (1/(2*L*v0))*l2
 
-# Function to comput the gradient of regularised empirical risk
+# Function to compute the gradient of regularised empirical risk
 # Categorical cross entropy loss with L2 regularisation
 def dRER(W,R,Yb,L,v0):
     """
@@ -172,7 +174,7 @@ def dRER(W,R,Yb,L,v0):
 	Yb :: one-hot encoded target training labels, (N*Ky) matrix
 	L :: lambda parameter
 	v0 :: variance estimate parameter
-	returns drer :: gradient of regularised empirical risk
+	returns drer :: 1D-gradient of regularised empirical risk
 	"""
     N,Dr = R.shape
     Ky = Yb.shape[1]
@@ -184,12 +186,39 @@ def dRER(W,R,Yb,L,v0):
     G = R@w+b
     # Compute label probabilities
     A = softmax(G,axis=1)
-    # Gradient of crossentropy wrt weights
+    # Gradient components
     dLdw = (1/N)*R.T@(A-Yb) + (1/(L*v0))*w
-    # Gradient of crossentropy wrt biases
-    dLdb = (1/N)*np.sum(A-Yb,axis=0) + (1/(L*v0))*b
+    dLdb = (1/N)*np.sum(A-Yb,axis=0)
     return np.concatenate((dLdw.flatten(),dLdb))
 
+# Function to compute the Hessian of regularised empirical risk
+# Categorical cross entropy loss with L2 regularisation
+def HRER(W,R,Yb,L,v0):
+    """
+	W :: linear parameters, (Ky+1)*Dr vector
+	R :: features, (N*Dr) matrix
+	Yb :: one-hot encoded target training labels, (N*Ky) matrix
+	L :: lambda parameter
+	v0 :: variance estimate parameter
+	returns drer :: 1D-gradient of regularised empirical risk
+	"""
+    N,Dr = R.shape
+    Ky = Yb.shape[1]
+    # w weights shape (Dr,Ky)
+    w = W[:(Dr*Ky)].reshape(Dr,Ky)
+    # b bias shape (Ky)
+    b = W[(Dr*Ky):]
+    # NN output linear approximation
+    G = R@w+b
+    # Compute label probabilities
+    A = softmax(G,axis=1)
+    # Hessian components (original paper omits division by N)
+    d2Ldw2 = (1/N)*np.square(R).T@(A-np.square(A)) + (1/(L*v0))
+    d2Ldb2 = (1/N)*np.sum(A-np.square(A),axis=0)
+    return np.concatenate((d2Ldw2.flatten(),d2Ldb2))
+
+# (Optional) callback function
+# For storing intermediate values in L-BFGS optimisation
 def clbk(W):
     """
     Custom callback function for storing intermediate
@@ -234,7 +263,8 @@ def PACTran_verbose(F,Y,p=0.9):
     clbk.iterations = []
     clbk.weights = []
     opt = minimize(RER,W0,args=(R,Yb,L,v0),
-                    method='L-BFGS-B',jac=dRER,callback=clbk)
+                    method='L-BFGS-B',jac=dRER,callback=clbk,
+                    options=dict(maxiter=100),tol=1e-6)
     print(opt)
     iterations = np.array(clbk.iterations)
     weights = np.array(clbk.weights)
@@ -242,18 +272,12 @@ def PACTran_verbose(F,Y,p=0.9):
     plt.plot(iterations,RERs)
     # Optimised parameters
     Wopt = opt.x
-    wopt = Wopt[:(Dr*Ky)].reshape(Dr,Ky)
-    bopt = Wopt[(Dr*Ky):]
     # Optimised loss
     RERopt = opt.fun
-    # Optimised label predictions
-    Gopt = R@wopt+bopt
-    Aopt = softmax(Gopt,axis=1)
     # Hessian components (original paper omits division by N)
-    d2Ldw2 = (1/N)*np.square(R).T@(Aopt-np.square(Aopt))
-    d2Ldb2 = (1/N)*np.sum(Aopt-np.square(Aopt),axis=0)
+    Hess = HRER(Wopt,R,Yb,L,v0)
     # Trace of optimised RER Hessian
-    TrHess = np.sum(d2Ldw2) + np.sum(d2Ldb2)
+    TrHess = np.sum(Hess)
     # Return PACTran_Gauss result
     return RERopt + (Ky*Dr/(2*L))*np.log(1+(L*v0/(Ky*Dr))*TrHess)
 
@@ -281,17 +305,13 @@ def PACTran_concise(F,Y,p=0.9):
     R=pca.fit_transform(F)
     R-=np.mean(R,axis=0)
     W0 = np.concatenate((0.03*np.random.normal(size=(Dr*Ky)),np.zeros(Ky)))
-    opt=minimize(RER,W0,args=(R,Yb,L,v0),method='L-BFGS-B',jac=dRER)
+    opt=minimize(RER,W0,args=(R,Yb,L,v0),method='L-BFGS-B',
+                 jac=dRER,options=dict(maxiter=100),tol=1e-6)
     Wopt=opt.x
-    wopt=Wopt[:(Dr*Ky)].reshape(Dr,Ky)
-    bopt=Wopt[(Dr*Ky):]
     RERopt=opt.fun
-    Gopt=R@wopt+bopt
-    Aopt=softmax(Gopt,axis=1)
     # Hessian components (original paper omits division by N)
-    d2Ldw2=(1/N)*np.square(R).T@(Aopt-np.square(Aopt))
-    d2Ldb2=(1/N)*np.sum(Aopt-np.square(Aopt),axis=0)
-    TrHess=np.sum(d2Ldw2)+np.sum(d2Ldb2)
+    Hess = HRER(Wopt,R,Yb,L,v0)
+    TrHess=np.sum(Hess)
     return RERopt+(Ky*Dr/(2*L))*np.log(1+(L*v0/(Ky*Dr))*TrHess)
 
 #%%
