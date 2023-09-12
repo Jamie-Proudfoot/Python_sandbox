@@ -265,11 +265,11 @@ def PACTran_verbose(F,Y,p=0.9):
     opt = minimize(RER,W0,args=(R,Yb,L,v0),
                     method='L-BFGS-B',jac=dRER,callback=clbk,
                     options=dict(maxiter=100),tol=1e-6)
-    print(opt)
+    # print(opt)
     iterations = np.array(clbk.iterations)
     weights = np.array(clbk.weights)
     RERs = np.array([RER(w,R,Yb,L,v0) for w in weights])
-    plt.plot(iterations,RERs)
+    # plt.plot(iterations,RERs)
     # Optimised parameters
     Wopt = opt.x
     # Optimised loss
@@ -286,14 +286,14 @@ def PACTran_verbose(F,Y,p=0.9):
 # Conise code. Author: JamieProudfoot.
 
 # Function to compute PACTran_Gaussian (with fixed hyperparameters L, v0)
-def PACTran_concise(F,Y,p=0.9):
+def PACTran_succinct(F,Y,p=0.9):
     """
 	F :: hidden-embedding features, (N*Df) matrix
 	Y :: target training labels, N vector
     p :: Dr/Df where Dr is the PCA-reduced dimensionality [0.5, 0.9]
     returns :: PACTran_Gaussian (PAC-Transferability measure with 
     Gaussain prior) to predict the success of transfer learning
-    concise version
+    succinct version
 	"""
     N,Df=F.shape
     Dr=int(np.rint(Df*p))
@@ -318,30 +318,30 @@ def PACTran_concise(F,Y,p=0.9):
 
 # Testing equivalence of PACTran score functions
 
-N = 100
-Ky = 4
-Df = 6
+# N = 100
+# Ky = 4
+# Df = 6
 
-F = np.array(np.random.randint(2,size=(N,Df)),dtype=np.float64)
-Y = np.random.randint(Ky,size=N)
+# F = np.array(np.random.randint(2,size=(N,Df)),dtype=np.float64)
+# Y = np.random.randint(Ky,size=N)
 
-print(f"F[:10]: \n{F[:10]}")
-print(f"Y[:10]: \n{Y[:10]}")
-print()
+# print(f"F[:10]: \n{F[:10]}")
+# print(f"Y[:10]: \n{Y[:10]}")
+# print()
 
-t0 = datetime.datetime.now()
-print(f"Original: {PACTran(F,Y,lda_factor=10)[0][4][1]}")
-t1 = datetime.datetime.now()
-print((t1-t0))
-print()
-t0 = datetime.datetime.now()
-print(f"Verbose: {PACTran_verbose(F,Y)}")
-t1 = datetime.datetime.now()
-print((t1-t0))
-print()
-t0 = datetime.datetime.now()
-print(f"Concise {PACTran_concise(F,Y)}")
-t1 = datetime.datetime.now()
-print((t1-t0))
+# t0 = datetime.datetime.now()
+# print(f"Original: {PACTran(F,Y,lda_factor=10)[0][4][1]}")
+# t1 = datetime.datetime.now()
+# print((t1-t0))
+# print()
+# t0 = datetime.datetime.now()
+# print(f"Verbose: {PACTran_verbose(F,Y)}")
+# t1 = datetime.datetime.now()
+# print((t1-t0))
+# print()
+# t0 = datetime.datetime.now()
+# print(f"Concise {PACTran_succinct(F,Y)}")
+# t1 = datetime.datetime.now()
+# print((t1-t0))
 
 #%%

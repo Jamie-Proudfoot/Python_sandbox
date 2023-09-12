@@ -106,7 +106,7 @@ print(f'Succinct: {NLEEP_succinct(F,Y)}')
 #%%
 # OTCE
 
-from otce_sandbox import OTCE, OTCE_succinct, OTCE_verbose
+from otce_sandbox import OTCE, OTCE_verbose, OTCE_succinct
 print(f'Original: {OTCE(Fs,F,Z,Y)}')
 print(f'Verbose: {OTCE_verbose(Fs,F,Z,Y)}')
 print(f'Succinct: {OTCE_succinct(Fs,F,Z,Y)}')
@@ -114,9 +114,17 @@ print(f'Succinct: {OTCE_succinct(Fs,F,Z,Y)}')
 #%%
 # GBC
 
-from gbc_sandbox import GBC, GBC_succinct, GBC_verbose
+from gbc_sandbox import GBC, GBC_verbose, GBC_succinct
 print(f'Original: {GBC(F,Y,"diagonal")}')
 print(f'Verbose: {GBC_verbose(F,Y)}')
 print(f'Succinct: {GBC_succinct(F,Y)}')
+
+#%%
+# PACTran_Gauss_fixed
+
+from pactran_sandbox import PACTran, PACTran_verbose, PACTran_succinct
+print(f'Original: {PACTran(F,Y,10)[0][4][1]}')
+print(f'Verbose: {PACTran_verbose(F,Y)}')
+print(f'Succinct: {PACTran_succinct(F,Y)}')
 
 #%%
