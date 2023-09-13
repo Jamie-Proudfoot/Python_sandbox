@@ -128,3 +128,10 @@ print(f'Verbose: {PACTran_verbose(F,Y)}')
 print(f'Succinct: {PACTran_succinct(F,Y)}')
 
 #%%
+# LFC
+
+from lfc_sandbox import LFC_verbose, LFC_succinct
+print(f'Verbose: {LFC_verbose(F,Y)}')
+print(f'Succinct: {LFC_succinct(F,Y)}')
+
+#%%

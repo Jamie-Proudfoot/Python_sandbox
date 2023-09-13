@@ -52,18 +52,13 @@ def LFC_succinct(F,Y):
 
 # Testing equivalence of LFC functions
 
-F = np.random.randn(50,20)
-Y = np.random.randint(2,size=50)
+# F = np.random.randn(50,20)
+# Y = np.random.randint(2,size=50)
 
-# print(f"F[:10]:\n{F[:10]}")
-print(f"Y[:10]:\n{Y[:10]}")
-print()
-
-# t0 = datetime.datetime.now()
-# print(f"Original: {LFC(F,Y)}")
-# t1 = datetime.datetime.now()
-# print((t1-t0))
+# # print(f"F[:10]:\n{F[:10]}")
+# print(f"Y[:10]:\n{Y[:10]}")
 # print()
+
 t0 = datetime.datetime.now()
 print(f"Verbose: {LFC_verbose(F,Y)}")
 t1 = datetime.datetime.now()
