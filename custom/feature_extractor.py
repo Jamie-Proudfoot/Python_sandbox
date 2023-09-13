@@ -135,3 +135,11 @@ print(f'Verbose: {LFC_verbose(F,Y)}')
 print(f'Succinct: {LFC_succinct(F,Y)}')
 
 #%%
+# TransRate
+
+# from transrate_sandbox import TrR, TrR_verbose, TrR_succinct
+# print(f'Original: {TrR(F,Y)}')
+# print(f'Verbose: {TrR(F,Y)}')
+# print(f'Succinct: {TrR(F,Y)}')
+
+#%%
