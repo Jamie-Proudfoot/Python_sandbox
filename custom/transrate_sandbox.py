@@ -15,15 +15,15 @@ import datetime
 def coding_rate(Z, eps=1E-4):
     n, d = Z.shape
     # Compute log det of rate distortion (estimate of entropy)
-    (_, rate) = np.linalg.slogdet((np.eye(d) + 1 / (n*eps) * Z.transpose() @ Z))
+    (_, rate) = np.linalg.slogdet((np.eye(d) + 1 / (n * eps) * Z.transpose() @ Z))
     return 0.5 * rate
 
 def TrR(Z, y, eps=1E-4):
-    # Mean-centered faetures
+    # Mean-centered features
     Z = Z - np.mean(Z, axis=0, keepdims=True)
     # Compute marginal rate distortion R(Z;eps)
     RZ = coding_rate(Z, eps)
-    RZY = 0
+    RZY = 0.
     K = int(y.max() + 1)
     # !This code assumes a uniform distribution of labels!
     for i in range(K):
@@ -49,10 +49,10 @@ def TrR_verbose(F,Y,eps=1e-4):
     F -= np.mean(F,axis=0)
     Ky = int(Y.max()+1)
     # Compute log det of marginal rate distortion R(F;eps)
-    RF = (1/2)*np.log(np.linalg.det(np.eye(Df)+(1/(N*eps))*(F.T@F)))
+    RF = (1/2)*np.linalg.slogdet(np.eye(Df)+(1/(N*eps))*(F.T@F))[1]
     Nc = [np.sum(Y==c) for c in range(Ky)]
     # Compute weighted average log det of conditional rate distortions R(F|Y;eps)
-    RFY = (1/(2*N))*np.sum([Nc[c]*np.log(np.linalg.det(np.eye(Df)+(1/(Nc[c]*eps))*(F[Y==c].T@F[Y==c]))) for c in range(Ky)])
+    RFY = (1/(2*N))*np.sum([Nc[c]*np.linalg.slogdet(np.eye(Df)+(1/(Nc[c]*eps))*(F[Y==c].T@F[Y==c]))[1] for c in range(Ky)])
     return RF - RFY
 
 
@@ -72,9 +72,9 @@ def TrR_succinct(F,Y,eps=1e-4):
     N,Df=F.shape
     F-=np.mean(F,axis=0)
     Ky=int(Y.max()+1)
-    RF=(1/2)*np.log(np.linalg.det(np.eye(Df)+(1/(N*eps))*(F.T@F)))
+    RF=(1/2)*np.linalg.slogdet(np.eye(Df)+(1/(N*eps))*(F.T@F))[1]
     Nc=[np.sum(Y==c) for c in range(Ky)]
-    RFY=(1/(2*N))*np.sum([Nc[c]*np.log(np.linalg.det(np.eye(Df)+(1/(Nc[c]*eps))*(F[Y==c].T@F[Y==c]))) for c in range(Ky)])
+    RFY=(1/(2*N))*np.sum([Nc[c]*np.linalg.slogdet(np.eye(Df)+(1/(Nc[c]*eps))*(F[Y==c].T@F[Y==c]))[1] for c in range(Ky)])
     return RF - RFY
 
 #%%

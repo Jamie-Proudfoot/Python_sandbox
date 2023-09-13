@@ -66,7 +66,7 @@ print(F.shape)
 #%%
 # H-Score
 
-from hscore_sandbox import HScore, HScore_verbose, HScore_succinct, HScore_regularised
+from hscore_sandbox import HScore, HScore_verbose, HScore_succinct, HScore_regularised, HScore_regularised_lit
 print(f'Original: {HScore(F,Y)}')
 print(f'Verbose: {HScore_verbose(F,Y)}')
 print(f'Succinct: {HScore_succinct(F,Y)}')
@@ -137,9 +137,9 @@ print(f'Succinct: {LFC_succinct(F,Y)}')
 #%%
 # TransRate
 
-# from transrate_sandbox import TrR, TrR_verbose, TrR_succinct
-# print(f'Original: {TrR(F,Y)}')
-# print(f'Verbose: {TrR(F,Y)}')
-# print(f'Succinct: {TrR(F,Y)}')
+from transrate_sandbox import TrR, TrR_verbose, TrR_succinct
+print(f'Original: {TrR(F,Y)}')
+print(f'Verbose: {TrR_verbose(F,Y)}')
+print(f'Succinct: {TrR_succinct(F,Y)}')
 
 #%%
