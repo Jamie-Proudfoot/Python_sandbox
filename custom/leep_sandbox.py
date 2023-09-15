@@ -91,8 +91,8 @@ def LEEP_succinct(A,Y):
 
 # Testing equivalence of LEEP score functions
 
-# A = np.array([[0.3,0.7],[0.2,0.8],[0.9,0.1],[0.55,0.45]])
-# Y = np.array([1,1,0,0])
+# A = np.array([[0.3,0.7],[0.2,0.8],[0.9,0.1],[0.55,0.45],[0.6,0.4]])
+# Y = np.array([1,1,0,0,1])
 
 # print(f"A:\n{A}")
 # print(f"Y:\n{Y}")
