@@ -37,10 +37,8 @@ def NLEEP_verbose(F,Y,p=0.9,Kv=7):
     A = gm.predict_proba(R)
     # Normalise V so that total sum over V == 1
     normalised_A = A / N
-    # Initialise joint probability matrix P(y,v)
-    joint=np.zeros((Ky, Kv))
-    # Single loop over target data classes
-    for y in range(Ky): joint[y] = np.sum(normalised_A[Y == y], axis=0)
+    # Compute joint probability matrix P(y,v)
+    joint = (Y == np.vstack(np.arange(Ky)))@normalised_A
     # Compute conditional probability matrix P(y|v) = P(y,v) / P(v)
     conditional = (joint / joint.sum(axis=0)).T
     # Compute EEP (expected empirical prediction)
@@ -72,8 +70,7 @@ def NLEEP_succinct(F,Y,p=0.9,Kv=7):
     gm=GaussianMixture(n_components=Kv,random_state=0).fit(R)
     A=gm.predict_proba(R)
     An=A/N
-    joint=np.zeros((Ky,Kv))
-    for y in range(Ky): joint[y]=np.sum(An[Y==y],axis=0)
+    joint=(Y==np.vstack(np.arange(Ky)))@An
     conditional=(joint/joint.sum(axis=0)).T
     marginal=A@conditional
     EEP=np.array([py[y] for py,y in zip(marginal,Y)])

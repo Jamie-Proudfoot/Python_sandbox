@@ -52,10 +52,8 @@ def LEEP_verbose(A,Y):
     normalised_A = A / N
     # Ky: number of target label classes
     Ky=int(np.max(Y) + 1)
-    # Initialise joint probability matrix P(y,z)
-    joint=np.zeros((Ky, Kz))
-    # Single loop over target data classes
-    for y in range(Ky): joint[y] = np.sum(normalised_A[Y == y], axis=0)
+    # Compute joint probability matrix P(y,z)
+    joint = (Y == np.vstack(np.arange(Ky)))@normalised_A
     # Compute conditional probability matrix P(y|z) = P(y,z) / P(z)
     conditional = (joint / joint.sum(axis=0)).T
     # Compute EEP (expected empirical prediction)
@@ -80,8 +78,7 @@ def LEEP_succinct(A,Y):
     N,Kz=A.shape
     An=A/N
     Ky=int(np.max(Y)+1)
-    joint=np.zeros((Ky,Kz))
-    for y in range(Ky): joint[y]=np.sum(An[Y==y],axis=0)
+    joint=(Y==np.vstack(np.arange(Ky)))@An
     conditional=(joint/joint.sum(axis=0)).T
     marginal=A@conditional
     EEP=np.array([py[y] for py,y in zip(marginal,Y)])
@@ -91,7 +88,7 @@ def LEEP_succinct(A,Y):
 
 # Testing equivalence of LEEP score functions
 
-# A = np.array([[0.3,0.7],[0.2,0.8],[0.9,0.1],[0.55,0.45],[0.6,0.4]])
+# A = np.array([[0.3,0.7],[0.2,0.8],[0.9,0.1],[0.55,0.45],[0.7,0.3]])
 # Y = np.array([1,1,0,0,1])
 
 # print(f"A:\n{A}")
