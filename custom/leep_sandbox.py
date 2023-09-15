@@ -53,7 +53,7 @@ def LEEP_verbose(A,Y):
     # Ky: number of target label classes
     Ky=int(np.max(Y) + 1)
     # Compute joint probability matrix P(y,z)
-    joint = (Y == np.vstack(np.arange(Ky)))@normalised_A
+    joint = (Y == np.vstack(range(Ky)))@normalised_A
     # Compute conditional probability matrix P(y|z) = P(y,z) / P(z)
     conditional = (joint / joint.sum(axis=0)).T
     # Compute EEP (expected empirical prediction)
@@ -78,7 +78,7 @@ def LEEP_succinct(A,Y):
     N,Kz=A.shape
     An=A/N
     Ky=int(np.max(Y)+1)
-    joint=(Y==np.vstack(np.arange(Ky)))@An
+    joint=(Y==np.vstack(range(Ky)))@An
     conditional=(joint/joint.sum(axis=0)).T
     marginal=A@conditional
     EEP=np.array([py[y] for py,y in zip(marginal,Y)])
