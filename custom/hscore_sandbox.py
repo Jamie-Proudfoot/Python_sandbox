@@ -2,7 +2,9 @@
 
 import numpy as np
 import datetime
-from sklearn.covariance import LedoitWolf
+from sklearn.random_projection import GaussianRandomProjection
+from sklearn.covariance import LedoitWolf, ledoit_wolf_shrinkage
+from scipy.stats import zscore
 
 #%%
 
@@ -95,42 +97,84 @@ def HScore_regularised(F,Y):
     F :: 'feature function' (N*D matrix)
     Y :: target label (N vector)
     returns hscore :: numerical measure of feature label association
+    Only valid if N > D (# data points > dimensionality of features)
     """
     F=F.astype(np.float64)
+    F-=np.mean(F,axis=0,keepdims=True)
     g=np.zeros_like(F,dtype=np.float64)
-    cov=LedoitWolf().fit(F-np.mean(F,axis=0,keepdims=True))
+    cov=LedoitWolf().fit(F)
     for y in set(Y): g[Y==y]=np.mean(F[Y==y],axis=0)
     return np.trace(np.linalg.pinv(cov.covariance_)@((1-cov.shrinkage_)*np.cov(g,rowvar=False)))
+
+#%%
+
+# Optimised regularised H-Score calculation 
+# Following the suggestions in this paper: https://arxiv.org/abs/2110.06893
+# Uses LeDoit Wolf algorithm to compute a more stable correlation matrix
+
+def HScore_regularised_opt(F,Y,p):
+    """
+    Function to calculate H-score according to https://arxiv.org/abs/2110.06893
+    F :: 'feature function' (N*D matrix)
+    Y :: target label (N vector)
+    returns hscore_reg :: (regularised) H-Score transferability measure
+    """
+    N,D = F.shape
+    Ky = int(Y.max()+1)
+    D = int(np.rint(D*p))
+    grp = GaussianRandomProjection(n_components=D)
+    F = grp.fit_transform(F)
+    F = zscore(F,axis=0,ddof=1)
+    Nc = np.unique(Y,return_counts=True)[1]
+    R = np.zeros((D,Ky))
+    for y in range(Ky): R[:,y] = np.sqrt(Nc[y])*np.mean(F[Y==y],axis=0)
+    if N < D:
+        a = ledoit_wolf_shrinkage(F,assume_centered=True)
+        W = N*a*np.eye(N)+(1-a)*(F@F.T)
+        G = F@R
+        Ha = ((1-a)/(N*a))*(np.sum(R**2)-(1-a)*(G.flatten().T@(np.linalg.pinv(W)@G).flatten()))
+    else:
+        ld = LedoitWolf().fit(F)
+        a = ld.shrinkage_
+        cov_a = ld.covariance_
+        Ha = ((1-a)/N)*np.trace((np.linalg.pinv(cov_a)@R)@R.T)
+    return Ha
+
 #%%
 
 # Testing equivalence of H-score functions
 
-# F = np.array([[1,0,1,1,1],[0,1,1,0,1],[1,1,1,1,1],[0,0,0,1,1]],dtype=np.float64)
-# Y = np.array([1,1,0,0])
+F = np.array([[1,0,1,1,1],[0,1,1,0,1],[1,1,1,1,1],[0,0,0,1,1]],dtype=np.float64)
+Y = np.array([1,1,0,0])
 
-# print(f"F:\n{F}")
-# print(f"Y:\n{Y}")
-# print()
+print(f"F:\n{F}")
+print(f"Y:\n{Y}")
+print()
 
-# t0 = datetime.datetime.now()
-# print(f"Original: {HScore(F,Y)}")
-# t1 = datetime.datetime.now()
-# print((t1-t0))
-# print()
-# t0 = datetime.datetime.now()
-# print(f"Verbose: {HScore_verbose(F,Y)}")
-# t1 = datetime.datetime.now()
-# print((t1-t0))
-# print()
-# t0 = datetime.datetime.now()
-# print(f"Succinct: {HScore_succinct(F,Y)}")
-# t1 = datetime.datetime.now()
-# print((t1-t0))
-# print()
-# t0 = datetime.datetime.now()
-# print(f"Regularised: {HScore_regularised(F,Y)}")
-# t1 = datetime.datetime.now()
-# print((t1-t0))
-# print()
+t0 = datetime.datetime.now()
+print(f"Original: {HScore(F,Y)}")
+t1 = datetime.datetime.now()
+print((t1-t0))
+print()
+t0 = datetime.datetime.now()
+print(f"Verbose: {HScore_verbose(F,Y)}")
+t1 = datetime.datetime.now()
+print((t1-t0))
+print()
+t0 = datetime.datetime.now()
+print(f"Succinct: {HScore_succinct(F,Y)}")
+t1 = datetime.datetime.now()
+print((t1-t0))
+print()
+t0 = datetime.datetime.now()
+print(f"Regularised: {HScore_regularised(F,Y)}")
+t1 = datetime.datetime.now()
+print((t1-t0))
+print()
+t0 = datetime.datetime.now()
+print(f"Regularised_opt: {HScore_regularised_opt(F,Y,0.9)}")
+t1 = datetime.datetime.now()
+print((t1-t0))
+print()
 
 # %%
