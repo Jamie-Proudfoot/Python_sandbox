@@ -88,7 +88,7 @@ def HScore_succinct(F,Y):
 #%%
 
 # Regularised H-Score calculation 
-# Following the suggestions in this paper: https://arxiv.org/abs/2110.06893
+# Following code in this repository: https://github.com/thuml/Transfer-Learning-Library
 # Uses LeDoit Wolf algorithm to compute a more stable correlation matrix
 
 def HScore_regularised(F,Y):
