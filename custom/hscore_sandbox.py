@@ -112,7 +112,7 @@ def HScore_regularised(F,Y):
 # Following the suggestions in this paper: https://arxiv.org/abs/2110.06893
 # Uses LeDoit Wolf algorithm to compute a more stable correlation matrix
 
-def HScore_regularised_opt(F,Y,p):
+def HScore_regularised_opt(F,Y,p=0.9):
     """
     Function to calculate H-score according to https://arxiv.org/abs/2110.06893
     F :: 'feature function' (N*D matrix)
@@ -144,37 +144,37 @@ def HScore_regularised_opt(F,Y,p):
 
 # Testing equivalence of H-score functions
 
-F = np.array([[1,0,1,1,1],[0,0,1,0,1],[1,0,1,1,1],[0,0,0,1,1]],dtype=np.float64)
-Y = np.array([1,1,0,0])
+# F = np.array([[1,0,1,1,1],[0,0,1,0,1],[1,0,1,1,1],[0,0,0,1,1]],dtype=np.float64)
+# Y = np.array([1,1,0,0])
 
-print(f"F:\n{F}")
-print(f"Y:\n{Y}")
-print()
+# print(f"F:\n{F}")
+# print(f"Y:\n{Y}")
+# print()
 
-t0 = datetime.datetime.now()
-print(f"Original: {HScore(F,Y)}")
-t1 = datetime.datetime.now()
-print((t1-t0))
-print()
-t0 = datetime.datetime.now()
-print(f"Verbose: {HScore_verbose(F,Y)}")
-t1 = datetime.datetime.now()
-print((t1-t0))
-print()
-t0 = datetime.datetime.now()
-print(f"Succinct: {HScore_succinct(F,Y)}")
-t1 = datetime.datetime.now()
-print((t1-t0))
-print()
-t0 = datetime.datetime.now()
-print(f"Regularised: {HScore_regularised(F,Y)}")
-t1 = datetime.datetime.now()
-print((t1-t0))
-print()
-t0 = datetime.datetime.now()
-print(f"Regularised_opt: {HScore_regularised_opt(F,Y,0.9)}")
-t1 = datetime.datetime.now()
-print((t1-t0))
-print()
+# t0 = datetime.datetime.now()
+# print(f"Original: {HScore(F,Y)}")
+# t1 = datetime.datetime.now()
+# print((t1-t0))
+# print()
+# t0 = datetime.datetime.now()
+# print(f"Verbose: {HScore_verbose(F,Y)}")
+# t1 = datetime.datetime.now()
+# print((t1-t0))
+# print()
+# t0 = datetime.datetime.now()
+# print(f"Succinct: {HScore_succinct(F,Y)}")
+# t1 = datetime.datetime.now()
+# print((t1-t0))
+# print()
+# t0 = datetime.datetime.now()
+# print(f"Regularised: {HScore_regularised(F,Y)}")
+# t1 = datetime.datetime.now()
+# print((t1-t0))
+# print()
+# t0 = datetime.datetime.now()
+# print(f"Regularised_opt: {HScore_regularised_opt(F,Y)}")
+# t1 = datetime.datetime.now()
+# print((t1-t0))
+# print()
 
 # %%
