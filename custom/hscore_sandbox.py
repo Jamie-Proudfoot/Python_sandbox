@@ -144,7 +144,7 @@ def HScore_regularised_opt(F,Y,p):
 
 # Testing equivalence of H-score functions
 
-F = np.array([[1,0,1,1,1],[0,1,1,0,1],[1,1,1,1,1],[0,0,0,1,1]],dtype=np.float64)
+F = np.array([[1,0,1,1,1],[0,0,1,0,1],[1,0,1,1,1],[0,0,0,1,1]],dtype=np.float64)
 Y = np.array([1,1,0,0])
 
 print(f"F:\n{F}")
