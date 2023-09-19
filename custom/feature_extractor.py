@@ -54,9 +54,10 @@ A = initial_model.predict(X)
 print(A)
 Z = A.argmax(axis=-1)
 print(Z)
-# Extracted features for this image
+# Extracted features for target images
 F = feature_extractor(X)
 F = np.array(F).reshape(N,-1)
+# Extracted features for source images
 Fs = feature_extractor(Xs)
 Fs = np.array(Fs).reshape(N,-1)
 print(F.shape)
