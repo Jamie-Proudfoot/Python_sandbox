@@ -18,7 +18,7 @@ def compute_bhattacharyya_distance(mu1, mu2, sigma1, sigma2):
   """Compute Bhattacharyya distance between diagonal or spherical Gaussians."""
   # Average variance as described in equations of GBC
   avg_sigma = (sigma1 + sigma2) / 2
-  # Compute DB (Bhattacharyya distance )as described in equations of GBC
+  # Compute DB (Bhattacharyya distance) as described in equations of GBC
   first_part = tf.reduce_sum((mu1 - mu2)**2 / avg_sigma) / 8
   second_part = tf.reduce_sum(tf.math.log(avg_sigma))
   second_part -= 0.5 * (tf.reduce_sum(tf.math.log(sigma1)))
