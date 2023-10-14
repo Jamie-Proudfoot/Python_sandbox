@@ -65,7 +65,7 @@ print(F.shape)
 #####
 
 #%%
-# H-Score
+# H-Score 
 
 from hscore_sandbox import HScore, HScore_verbose, HScore_succinct, HScore_regularised, HScore_regularised_opt
 print(f'Original: {HScore(F,Y)}')
