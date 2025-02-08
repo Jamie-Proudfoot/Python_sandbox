@@ -1,2 +1,2 @@
-# Python sandbox for statistics
+# Python sandbox
  
